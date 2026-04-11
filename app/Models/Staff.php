@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Staff extends Model
+{
+    use HasFactory, HasUuids;
+
+    public $incrementing = false;
+
+    protected $table = 'staff';
+
+    protected $keyType = 'string';
+
+    protected $fillable = ['employee_number', 'first_name', 'last_name', 'gender', 'phone', 'email', 'job_title', 'hire_date', 'status'];
+
+    protected function casts(): array
+    {
+        return ['hire_date' => 'date'];
+    }
+
+    public function user() { return $this->hasOne(User::class); }
+}
