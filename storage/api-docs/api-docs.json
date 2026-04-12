@@ -12,6 +12,358 @@
         }
     ],
     "paths": {
+        "/api/v1/academic-years": {
+            "get": {
+                "tags": [
+                    "Academic Years"
+                ],
+                "summary": "List academic years",
+                "operationId": "b18055eb2273dc36564076fb32f21033",
+                "responses": {
+                    "200": {
+                        "description": "Academic year collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AcademicYearResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Academic Years"
+                ],
+                "summary": "Create an academic year",
+                "operationId": "3306f5681af7e209eb309429d445603c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AcademicYearStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Academic year created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AcademicYearResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/academic-years/{academicYear}": {
+            "get": {
+                "tags": [
+                    "Academic Years"
+                ],
+                "summary": "Show an academic year",
+                "operationId": "339c7afd998c299b68236a67d3907089",
+                "parameters": [
+                    {
+                        "name": "academicYear",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Academic year detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AcademicYearResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Academic Years"
+                ],
+                "summary": "Delete an academic year",
+                "operationId": "129755d849cde12de301112caebeac24",
+                "parameters": [
+                    {
+                        "name": "academicYear",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Academic year deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Academic Years"
+                ],
+                "summary": "Update an academic year",
+                "operationId": "b432f3ae34af017f316b53b5efd87bee",
+                "parameters": [
+                    {
+                        "name": "academicYear",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AcademicYearUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Academic year updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AcademicYearResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/assessments": {
+            "get": {
+                "tags": [
+                    "Assessments"
+                ],
+                "summary": "List assessments",
+                "operationId": "54b0781f5259e064bdf00cea5d91094b",
+                "responses": {
+                    "200": {
+                        "description": "Assessment collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AssessmentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Assessments"
+                ],
+                "summary": "Create an assessment",
+                "operationId": "83a18bcb9b9bd3e6069eaeecf9b93033",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssessmentStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Assessment created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/assessments/{assessment}": {
+            "get": {
+                "tags": [
+                    "Assessments"
+                ],
+                "summary": "Show an assessment",
+                "operationId": "f6197d1aa5948e8a3780e88dbe3f2151",
+                "parameters": [
+                    {
+                        "name": "assessment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Assessment detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Assessments"
+                ],
+                "summary": "Update an assessment",
+                "operationId": "3c62ad3a915c60be98944f58a6f35357",
+                "parameters": [
+                    {
+                        "name": "assessment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssessmentUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Assessment updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/attendance": {
             "get": {
                 "tags": [
@@ -19,9 +371,43 @@
                 ],
                 "summary": "List attendance records",
                 "operationId": "a6932099c47f053aa5e73855af59233b",
+                "parameters": [
+                    {
+                        "name": "student_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "class_room_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Attendance collection"
+                        "description": "Attendance collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AttendanceResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -41,38 +427,21 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "student_id",
-                                    "class_room_id",
-                                    "attendance_date",
-                                    "status"
-                                ],
-                                "properties": {
-                                    "student_id": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "class_room_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "attendance_date": {
-                                        "type": "string",
-                                        "format": "date"
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "example": "PRESENT"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/AttendanceStoreRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Attendance saved"
+                        "description": "Attendance saved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AttendanceResource"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -94,31 +463,31 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "username",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "username": {
-                                        "type": "string",
-                                        "example": "admin"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/LoginRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Authenticated"
+                        "description": "Authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
                     },
                     "422": {
-                        "description": "Invalid credentials"
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -132,7 +501,24 @@
                 "operationId": "ca96b8331ed79555b759388fae4316e6",
                 "responses": {
                     "200": {
-                        "description": "Authenticated user"
+                        "description": "Authenticated user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -151,7 +537,206 @@
                 "operationId": "9bcd56c32550e9746a1e3549fe19bcab",
                 "responses": {
                     "200": {
-                        "description": "Logged out"
+                        "description": "Logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/classes": {
+            "get": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "List classes",
+                "operationId": "abd05457d38f78d3b7f4ea825fd1b863",
+                "responses": {
+                    "200": {
+                        "description": "Class collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ClassRoomResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "Create a class",
+                "operationId": "f4510b1be93be41892d271427b57e390",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClassRoomStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Class created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassRoomResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/classes/{class}": {
+            "get": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "Show a class",
+                "operationId": "a61d50e9e9ff20b9b8f38e1318439aa1",
+                "parameters": [
+                    {
+                        "name": "class",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Class detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassRoomResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "Delete a class",
+                "operationId": "c9da6a7ebd8f798ec94b73c6e4c9a1de",
+                "parameters": [
+                    {
+                        "name": "class",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Class deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "Update a class",
+                "operationId": "13ed13a139c51959156a1d09bf4c1418",
+                "parameters": [
+                    {
+                        "name": "class",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClassRoomUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Class updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassRoomResource"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -190,7 +775,22 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Grade collection"
+                        "description": "Grade collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/StudentGradeResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -210,38 +810,31 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "student_id",
-                                    "assessment_id",
-                                    "score"
-                                ],
-                                "properties": {
-                                    "student_id": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "assessment_id": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "score": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 78.5
-                                    },
-                                    "remarks": {
-                                        "type": "string",
-                                        "example": "Improved performance"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/GradeStoreRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Grade saved"
+                        "description": "Grade saved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StudentGradeResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -260,7 +853,22 @@
                 "operationId": "541085e1211c4e4d3b10fe7fd2a64294",
                 "responses": {
                     "200": {
-                        "description": "Payment collection"
+                        "description": "Payment collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PaymentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -280,43 +888,155 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "student_fee_account_id",
-                                    "amount_paid",
-                                    "payment_date",
-                                    "receipt_number"
-                                ],
-                                "properties": {
-                                    "student_fee_account_id": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "amount_paid": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 150000
-                                    },
-                                    "payment_date": {
-                                        "type": "string",
-                                        "format": "date"
-                                    },
-                                    "payment_method": {
-                                        "type": "string",
-                                        "example": "MPAMBA"
-                                    },
-                                    "receipt_number": {
-                                        "type": "string",
-                                        "example": "RCT-1001"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/PaymentStoreRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Payment saved"
+                        "description": "Payment saved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students/{student}/fees": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Get a student's fee accounts and payments",
+                "operationId": "f9d05ac4e8d85a4bb371443edeec60d5",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Student fee accounts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StudentFeesResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/finance/reports/collections": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get daily collections grouped by payment method",
+                "operationId": "cb38fb2a63681a3bf3f78518b54df1aa",
+                "responses": {
+                    "200": {
+                        "description": "Collections report",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CollectionsReportItem"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/permissions": {
+            "get": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "List permissions",
+                "operationId": "be063110c6243cc54dd87d302e6ed5b8",
+                "responses": {
+                    "200": {
+                        "description": "Permission collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PermissionResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Permissions"
+                ],
+                "summary": "Create a permission",
+                "operationId": "81a424c2d4483977b5a31dd3885d9adf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permission created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PermissionResource"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -329,7 +1049,7 @@
         "/api/v1/students/{student}/report-card": {
             "get": {
                 "tags": [
-                    "Grades"
+                    "Reports"
                 ],
                 "summary": "Get a student's report card",
                 "operationId": "a6dc651cb4a1066e8ec1a17983cce8df",
@@ -354,7 +1074,323 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Report card"
+                        "description": "Report card",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReportCardResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "List roles",
+                "operationId": "5fb48e537391f7aef7e00b94d3a55b76",
+                "responses": {
+                    "200": {
+                        "description": "Role collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/RoleResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Create a role",
+                "operationId": "45cfef156e61e131ca2b3142c74bab7f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/roles/{role}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Show a role",
+                "operationId": "55b355c815883d7bdc34e1ef08d0a0d5",
+                "parameters": [
+                    {
+                        "name": "role",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Role detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/staff": {
+            "get": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "List staff members",
+                "operationId": "36c4a558ffd2dd9f78e99ee76730e6a2",
+                "responses": {
+                    "200": {
+                        "description": "Staff collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/StaffResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Create a staff member",
+                "operationId": "b31adf9101d6ed0e704c6b3a9882ea7d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Staff member created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StaffResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/staff/{staff}": {
+            "get": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Show a staff member",
+                "operationId": "3475a1514ac96374df97af6124396015",
+                "parameters": [
+                    {
+                        "name": "staff",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Staff profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StaffResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Deactivate a staff member",
+                "operationId": "ac724db8e8bb059ec131e89410e56b76",
+                "parameters": [
+                    {
+                        "name": "staff",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Staff member deactivated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Update a staff member",
+                "operationId": "a87cd8fb766f5716498913ce55547d0b",
+                "parameters": [
+                    {
+                        "name": "staff",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Staff member updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StaffResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -373,7 +1409,22 @@
                 "operationId": "cac50beb776a7244c2dc5fe90f1a39f4",
                 "responses": {
                     "200": {
-                        "description": "Student collection"
+                        "description": "Student collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/StudentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -393,39 +1444,31 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "admission_number",
-                                    "first_name",
-                                    "last_name",
-                                    "enrollment_date"
-                                ],
-                                "properties": {
-                                    "admission_number": {
-                                        "type": "string",
-                                        "example": "ADM-1001"
-                                    },
-                                    "first_name": {
-                                        "type": "string",
-                                        "example": "Alice"
-                                    },
-                                    "last_name": {
-                                        "type": "string",
-                                        "example": "Banda"
-                                    },
-                                    "enrollment_date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2026-01-10"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/StudentStoreRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Student created"
+                        "description": "Student created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StudentResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -455,7 +1498,434 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Student profile"
+                        "description": "Student profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StudentResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Deactivate a student",
+                "operationId": "adbd96d1047f7ac0f3471bed17b964a5",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Student deactivated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Update a student",
+                "operationId": "87abb3d9872505bccd23597ba98324e8",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StudentUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Student updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StudentResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subjects": {
+            "get": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "List subjects",
+                "operationId": "4b6ab41603bbf26f5ab67338d0dea625",
+                "responses": {
+                    "200": {
+                        "description": "Subject collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SubjectResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Create a subject",
+                "operationId": "5d924ee71409290078e9ab9bc566a833",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubjectStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subject created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/subjects/{subject}": {
+            "get": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Show a subject",
+                "operationId": "6fb719a372fa8a35eae202a0e38cb500",
+                "parameters": [
+                    {
+                        "name": "subject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Delete a subject",
+                "operationId": "9a2f966c99562cb84e85db9b3594bc3c",
+                "parameters": [
+                    {
+                        "name": "subject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subject deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Update a subject",
+                "operationId": "e97f51e2aedd37de562e8793a486ce60",
+                "parameters": [
+                    {
+                        "name": "subject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubjectUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subject updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/terms": {
+            "get": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "List terms",
+                "operationId": "75300631347fa535f2c15185b40c1bbb",
+                "responses": {
+                    "200": {
+                        "description": "Term collection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TermResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Create a term",
+                "operationId": "3d2b88bddbc2d81efdcb5a204d005d33",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TermStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Term created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TermResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/terms/{term}": {
+            "get": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Show a term",
+                "operationId": "247380d4037f3f1473b37de0c9238cb8",
+                "parameters": [
+                    {
+                        "name": "term",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Term detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TermResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Update a term",
+                "operationId": "2827476babed97d849d232f95ae8c57c",
+                "parameters": [
+                    {
+                        "name": "term",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TermUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Term updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TermResource"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -467,6 +1937,1183 @@
         }
     },
     "components": {
+        "schemas": {
+            "MessageResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Operation completed successfully."
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "schema": "ValidationErrorResponseSchema",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponseSchema": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "UnauthorizedResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "example": "1|long-sanctum-token"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserResource"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "staff_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "guardian_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "last_login_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "staff": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "guardian": {
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "StudentStoreRequest": {
+                "required": [
+                    "admission_number",
+                    "first_name",
+                    "last_name",
+                    "enrollment_date"
+                ],
+                "properties": {
+                    "admission_number": {
+                        "type": "string",
+                        "example": "ADM-1001"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "Alice"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Banda"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "example": "FEMALE",
+                        "nullable": true
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "enrollment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "ACTIVE",
+                        "nullable": true
+                    },
+                    "current_class_room_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "guardians": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "is_primary": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "example": "Mother",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StudentUpdateRequest": {
+                "properties": {
+                    "first_name": {
+                        "type": "string",
+                        "example": "Alice"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Banda"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "example": "FEMALE",
+                        "nullable": true
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "ACTIVE"
+                    },
+                    "current_class_room_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "StudentResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "admission_number": {
+                        "type": "string",
+                        "example": "ADM-1001"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "Alice"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Banda"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "example": "FEMALE",
+                        "nullable": true
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "enrollment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "ACTIVE"
+                    },
+                    "current_class": {
+                        "type": "object"
+                    },
+                    "guardians": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "StaffStoreRequest": {
+                "required": [
+                    "employee_number",
+                    "first_name",
+                    "last_name"
+                ],
+                "properties": {
+                    "employee_number": {
+                        "type": "string",
+                        "example": "EMP-1001"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Phiri"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "nullable": true
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "hire_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "username": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "password": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StaffUpdateRequest": {
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "nullable": true
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StaffResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "employee_number": {
+                        "type": "string"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AcademicYearStoreRequest": {
+                "required": [
+                    "name",
+                    "start_date",
+                    "end_date"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "AcademicYearUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "AcademicYearResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    },
+                    "terms": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "TermStoreRequest": {
+                "required": [
+                    "academic_year_id",
+                    "name",
+                    "start_date",
+                    "end_date"
+                ],
+                "properties": {
+                    "academic_year_id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "TermUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "TermResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "academic_year_id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    },
+                    "academic_year": {
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ClassRoomStoreRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "stream": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "section": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "class_teacher_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ClassRoomUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "stream": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "section": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "class_teacher_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ClassRoomResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "stream": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "section": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "class_teacher_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "class_teacher": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "SubjectStoreRequest": {
+                "required": [
+                    "name",
+                    "code"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "SubjectUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "SubjectResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AssessmentStoreRequest": {
+                "required": [
+                    "class_subject_id",
+                    "term_id",
+                    "assessment_type_id",
+                    "title",
+                    "max_score",
+                    "assessment_date"
+                ],
+                "properties": {
+                    "class_subject_id": {
+                        "type": "integer"
+                    },
+                    "term_id": {
+                        "type": "integer"
+                    },
+                    "assessment_type_id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "max_score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "assessment_date": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "type": "object"
+            },
+            "AssessmentUpdateRequest": {
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "max_score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "assessment_date": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "type": "object"
+            },
+            "AssessmentResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "class_subject_id": {
+                        "type": "integer"
+                    },
+                    "term_id": {
+                        "type": "integer"
+                    },
+                    "assessment_type_id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "max_score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "assessment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "grades": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "RoleStoreRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "permission_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "RoleResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "guard_name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionStoreRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "guard_name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "GradeStoreRequest": {
+                "required": [
+                    "student_id",
+                    "assessment_id",
+                    "score"
+                ],
+                "properties": {
+                    "student_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "assessment_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "remarks": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "StudentGradeResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "student_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "assessment_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "grade_letter": {
+                        "type": "string"
+                    },
+                    "remarks": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "recorded_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "recorded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "student": {
+                        "type": "object"
+                    },
+                    "assessment": {
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AttendanceStoreRequest": {
+                "required": [
+                    "student_id",
+                    "class_room_id",
+                    "attendance_date",
+                    "status"
+                ],
+                "properties": {
+                    "student_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "class_room_id": {
+                        "type": "integer"
+                    },
+                    "attendance_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PRESENT",
+                            "ABSENT",
+                            "LATE",
+                            "EXCUSED"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "AttendanceResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "student_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "class_room_id": {
+                        "type": "integer"
+                    },
+                    "attendance_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "recorded_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "student": {
+                        "type": "object"
+                    },
+                    "class_room": {
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "PaymentStoreRequest": {
+                "required": [
+                    "student_fee_account_id",
+                    "amount_paid",
+                    "payment_date",
+                    "receipt_number"
+                ],
+                "properties": {
+                    "student_fee_account_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "amount_paid": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "receipt_number": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "PaymentResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "student_fee_account_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "amount_paid": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "receipt_number": {
+                        "type": "string"
+                    },
+                    "recorded_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "account": {
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "StudentFeesResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "admission_number": {
+                        "type": "string"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "feeAccounts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "CollectionsReportItem": {
+                "properties": {
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "total_collected": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "payments_count": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ReportCardResponse": {
+                "properties": {
+                    "student": {
+                        "type": "object"
+                    },
+                    "summary": {
+                        "type": "object"
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "grade_history": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "sanctum": {
                 "type": "http",
@@ -485,6 +3132,30 @@
             "description": "Student management"
         },
         {
+            "name": "Staff",
+            "description": "Staff management"
+        },
+        {
+            "name": "Academic Years",
+            "description": "Academic year management"
+        },
+        {
+            "name": "Terms",
+            "description": "Academic term management"
+        },
+        {
+            "name": "Classes",
+            "description": "Classroom management"
+        },
+        {
+            "name": "Subjects",
+            "description": "Subject catalog management"
+        },
+        {
+            "name": "Assessments",
+            "description": "Assessment management"
+        },
+        {
             "name": "Grades",
             "description": "Grade entry and reporting"
         },
@@ -495,6 +3166,18 @@
         {
             "name": "Attendance",
             "description": "Student attendance"
+        },
+        {
+            "name": "Roles",
+            "description": "Role management"
+        },
+        {
+            "name": "Permissions",
+            "description": "Permission management"
+        },
+        {
+            "name": "Reports",
+            "description": "Reporting endpoints"
         }
     ]
 }
