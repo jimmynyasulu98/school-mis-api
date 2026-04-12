@@ -4,13 +4,28 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
-use App\Models\Guardian;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/v1/students",
+     *     tags={"Students"},
+     *     summary="List students",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Student collection",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StudentResource"))
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         return StudentResource::collection(
@@ -18,6 +33,28 @@ class StudentController extends Controller
         );
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/students",
+     *     tags={"Students"},
+     *     summary="Create a student",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/StudentStoreRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Student created",
+     *         @OA\JsonContent(ref="#/components/schemas/StudentResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $payload = $request->validate([
@@ -56,11 +93,48 @@ class StudentController extends Controller
         return StudentResource::make($student)->response()->setStatusCode(201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/students/{student}",
+     *     tags={"Students"},
+     *     summary="Show a student",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="student", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Student profile",
+     *         @OA\JsonContent(ref="#/components/schemas/StudentResource")
+     *     )
+     * )
+     */
     public function show(Student $student)
     {
         return StudentResource::make($student->load(['currentClassRoom', 'guardians', 'feeAccounts.payments', 'grades']));
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/students/{student}",
+     *     tags={"Students"},
+     *     summary="Update a student",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="student", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/StudentUpdateRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Student updated",
+     *         @OA\JsonContent(ref="#/components/schemas/StudentResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
     public function update(Request $request, Student $student)
     {
         $payload = $request->validate([
@@ -77,6 +151,20 @@ class StudentController extends Controller
         return StudentResource::make($student->fresh(['currentClassRoom', 'guardians']));
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/students/{student}",
+     *     tags={"Students"},
+     *     summary="Deactivate a student",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="student", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Student deactivated",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     )
+     * )
+     */
     public function destroy(Student $student)
     {
         $student->update(['status' => 'INACTIVE']);

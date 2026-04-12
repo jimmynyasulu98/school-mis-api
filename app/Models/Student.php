@@ -39,4 +39,5 @@ class Student extends Model
     public function grades() { return $this->hasMany(StudentGrade::class); }
     public function feeAccounts() { return $this->hasMany(StudentFeeAccount::class); }
     public function gradeHistories() { return $this->hasMany(StudentGradeHistory::class); }
+    public function attendanceRecords() { return $this->hasMany(Attendance::class); }
 }

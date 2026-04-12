@@ -18,5 +18,7 @@ class StudentFeeAccount extends Model
 
     protected $fillable = ['student_id', 'fee_structure_id', 'balance'];
 
+    public function student() { return $this->belongsTo(Student::class); }
+    public function feeStructure() { return $this->belongsTo(FeeStructure::class); }
     public function payments() { return $this->hasMany(Payment::class, 'student_fee_account_id'); }
 }

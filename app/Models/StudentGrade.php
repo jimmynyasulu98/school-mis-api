@@ -22,4 +22,8 @@ class StudentGrade extends Model
     {
         return ['recorded_at' => 'datetime'];
     }
+
+    public function student() { return $this->belongsTo(Student::class); }
+    public function assessment() { return $this->belongsTo(Assessment::class); }
+    public function recorder() { return $this->belongsTo(Staff::class, 'recorded_by'); }
 }

@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/v1/auth/login",
+     *     tags={"Auth"},
+     *     summary="Login and receive a Sanctum token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/LoginRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Authenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/LoginResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -41,11 +62,47 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/auth/me",
+     *     tags={"Auth"},
+     *     summary="Get the authenticated user",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Authenticated user",
+     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     )
+     * )
+     */
     public function me(Request $request)
     {
         return response()->json($request->user()->load('roles', 'staff', 'guardian'));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/auth/logout",
+     *     tags={"Auth"},
+     *     summary="Logout the current token",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()?->delete();

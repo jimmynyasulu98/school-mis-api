@@ -12,11 +12,49 @@ use Illuminate\Support\Facades\Hash;
 
 class StaffController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/v1/staff",
+     *     tags={"Staff"},
+     *     summary="List staff members",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Staff collection",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StaffResource"))
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         return StaffResource::collection(Staff::with('user.roles')->latest()->paginate(15));
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/staff",
+     *     tags={"Staff"},
+     *     summary="Create a staff member",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/StaffStoreRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Staff member created",
+     *         @OA\JsonContent(ref="#/components/schemas/StaffResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $payload = $request->validate([
@@ -65,11 +103,48 @@ class StaffController extends Controller
         return StaffResource::make($staff->load('user.roles'))->response()->setStatusCode(201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/staff/{staff}",
+     *     tags={"Staff"},
+     *     summary="Show a staff member",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="staff", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Staff profile",
+     *         @OA\JsonContent(ref="#/components/schemas/StaffResource")
+     *     )
+     * )
+     */
     public function show(Staff $staff)
     {
         return StaffResource::make($staff->load('user.roles'));
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/staff/{staff}",
+     *     tags={"Staff"},
+     *     summary="Update a staff member",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="staff", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/StaffUpdateRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Staff member updated",
+     *         @OA\JsonContent(ref="#/components/schemas/StaffResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
     public function update(Request $request, Staff $staff)
     {
         $payload = $request->validate([
@@ -95,6 +170,20 @@ class StaffController extends Controller
         return StaffResource::make($staff->fresh('user.roles'));
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/staff/{staff}",
+     *     tags={"Staff"},
+     *     summary="Deactivate a staff member",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(name="staff", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Staff member deactivated",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     )
+     * )
+     */
     public function destroy(Staff $staff)
     {
         $staff->update(['status' => 'INACTIVE']);

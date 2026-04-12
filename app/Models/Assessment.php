@@ -21,5 +21,8 @@ class Assessment extends Model
         return ['assessment_date' => 'date'];
     }
 
+    public function classSubject() { return $this->belongsTo(ClassSubject::class); }
+    public function assessmentType() { return $this->belongsTo(AssessmentType::class); }
+    public function term() { return $this->belongsTo(Term::class); }
     public function grades() { return $this->hasMany(StudentGrade::class); }
 }

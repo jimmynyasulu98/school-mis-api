@@ -20,4 +20,7 @@ class Payment extends Model
     {
         return ['payment_date' => 'date'];
     }
+
+    public function account() { return $this->belongsTo(StudentFeeAccount::class, 'student_fee_account_id'); }
+    public function recorder() { return $this->belongsTo(Staff::class, 'recorded_by'); }
 }

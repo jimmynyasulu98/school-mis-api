@@ -1,0 +1,500 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "School MIS API",
+        "description": "High school management information system API built with Laravel.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Primary API server"
+        }
+    ],
+    "paths": {
+        "/api/v1/attendance": {
+            "get": {
+                "tags": [
+                    "Attendance"
+                ],
+                "summary": "List attendance records",
+                "operationId": "a6932099c47f053aa5e73855af59233b",
+                "responses": {
+                    "200": {
+                        "description": "Attendance collection"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Attendance"
+                ],
+                "summary": "Record attendance for a student",
+                "operationId": "923a72a236d63e03a166768db92dec3a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "student_id",
+                                    "class_room_id",
+                                    "attendance_date",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "student_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "class_room_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "attendance_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "PRESENT"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Attendance saved"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login and receive a Sanctum token",
+                "operationId": "0e326ce09f6496b8aa071164115ce2e0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Authenticated"
+                    },
+                    "422": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get the authenticated user",
+                "operationId": "ca96b8331ed79555b759388fae4316e6",
+                "responses": {
+                    "200": {
+                        "description": "Authenticated user"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout the current token",
+                "operationId": "9bcd56c32550e9746a1e3549fe19bcab",
+                "responses": {
+                    "200": {
+                        "description": "Logged out"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/grades": {
+            "get": {
+                "tags": [
+                    "Grades"
+                ],
+                "summary": "List grade entries",
+                "operationId": "8474a678a878d31a5f633c9448146db0",
+                "parameters": [
+                    {
+                        "name": "student_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "assessment_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Grade collection"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Grades"
+                ],
+                "summary": "Record or update a student grade",
+                "operationId": "64ed245e029c1f08d562c87f01f3a5b6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "student_id",
+                                    "assessment_id",
+                                    "score"
+                                ],
+                                "properties": {
+                                    "student_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "assessment_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "score": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 78.5
+                                    },
+                                    "remarks": {
+                                        "type": "string",
+                                        "example": "Improved performance"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Grade saved"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/payments": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "List payments",
+                "operationId": "541085e1211c4e4d3b10fe7fd2a64294",
+                "responses": {
+                    "200": {
+                        "description": "Payment collection"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Record a payment and update fee balance",
+                "operationId": "e24f4ae27f77e171d270f539987b4c68",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "student_fee_account_id",
+                                    "amount_paid",
+                                    "payment_date",
+                                    "receipt_number"
+                                ],
+                                "properties": {
+                                    "student_fee_account_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "amount_paid": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150000
+                                    },
+                                    "payment_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "MPAMBA"
+                                    },
+                                    "receipt_number": {
+                                        "type": "string",
+                                        "example": "RCT-1001"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment saved"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students/{student}/report-card": {
+            "get": {
+                "tags": [
+                    "Grades"
+                ],
+                "summary": "Get a student's report card",
+                "operationId": "a6dc651cb4a1066e8ec1a17983cce8df",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "term_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report card"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List students",
+                "operationId": "cac50beb776a7244c2dc5fe90f1a39f4",
+                "responses": {
+                    "200": {
+                        "description": "Student collection"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Create a student",
+                "operationId": "d28cc8d302a5387162cb2d6b92caf291",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "admission_number",
+                                    "first_name",
+                                    "last_name",
+                                    "enrollment_date"
+                                ],
+                                "properties": {
+                                    "admission_number": {
+                                        "type": "string",
+                                        "example": "ADM-1001"
+                                    },
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "Alice"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Banda"
+                                    },
+                                    "enrollment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-01-10"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Student created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students/{student}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Show a student",
+                "operationId": "9b2cb77beec2066cde02027c7a880e14",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Student profile"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication operations"
+        },
+        {
+            "name": "Students",
+            "description": "Student management"
+        },
+        {
+            "name": "Grades",
+            "description": "Grade entry and reporting"
+        },
+        {
+            "name": "Payments",
+            "description": "Fee payments and balances"
+        },
+        {
+            "name": "Attendance",
+            "description": "Student attendance"
+        }
+    ]
+}
