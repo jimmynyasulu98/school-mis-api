@@ -16,6 +16,12 @@ class Guardian extends Model
 
     protected $fillable = ['first_name', 'last_name', 'phone', 'email', 'address', 'relationship'];
 
-    public function students() { return $this->belongsToMany(Student::class)->withPivot(['is_primary', 'notes']); }
-    public function user() { return $this->hasOne(User::class); }
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'student_guardian')->withPivot(['is_primary', 'notes']);
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }

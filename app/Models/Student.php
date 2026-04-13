@@ -33,11 +33,32 @@ class Student extends Model
         ];
     }
 
-    public function guardians() { return $this->belongsToMany(Guardian::class)->withPivot(['is_primary', 'notes']); }
-    public function currentClassRoom() { return $this->belongsTo(ClassRoom::class, 'current_class_room_id'); }
-    public function enrollments() { return $this->hasMany(ClassEnrollment::class); }
-    public function grades() { return $this->hasMany(StudentGrade::class); }
-    public function feeAccounts() { return $this->hasMany(StudentFeeAccount::class); }
-    public function gradeHistories() { return $this->hasMany(StudentGradeHistory::class); }
-    public function attendanceRecords() { return $this->hasMany(Attendance::class); }
+    public function guardians()
+    {
+        return $this->belongsToMany(Guardian::class, 'student_guardian')->withPivot(['is_primary', 'notes']);
+    }
+    public function currentClassRoom()
+    {
+        return $this->belongsTo(ClassRoom::class, 'current_class_room_id');
+    }
+    public function enrollments()
+    {
+        return $this->hasMany(ClassEnrollment::class);
+    }
+    public function grades()
+    {
+        return $this->hasMany(StudentGrade::class);
+    }
+    public function feeAccounts()
+    {
+        return $this->hasMany(StudentFeeAccount::class);
+    }
+    public function gradeHistories()
+    {
+        return $this->hasMany(StudentGradeHistory::class);
+    }
+    public function attendanceRecords()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
