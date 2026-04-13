@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\AttendanceResource;
+use App\Http\Requests\StoreAttendanceRequest;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends BaseApiController
 {
@@ -15,8 +17,20 @@ class AttendanceController extends BaseApiController
      *     summary="List attendance records with pagination and optional included relationships",
      *     description="Retrieve a paginated list of attendance records. Use 'includes' parameter to eager load related resources (student, classroom).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -100,15 +114,9 @@ class AttendanceController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreAttendanceRequest $request)
     {
-        $payload = $request->validate([
-            'student_id' => ['required', 'uuid', 'exists:students,id'],
-            'class_room_id' => ['required', 'integer', 'exists:class_rooms,id'],
-            'date_marked' => ['required', 'date'],
-            'status' => ['required', 'string', 'in:present,absent,excused'],
-            'remarks' => ['nullable', 'string', 'max:500'],
-        ]);
+        $payload = $request->validated();
 
         $attendance = Attendance::updateOrCreate(
             [
@@ -116,9 +124,7 @@ class AttendanceController extends BaseApiController
                 'class_room_id' => $payload['class_room_id'],
                 'date_marked' => $payload['date_marked'],
             ],
-            array_merge($payload, [
-                'remarks' => $payload['remarks'] ?? null,
-            ])
+            $payload
         );
 
         return (new AttendanceResource($attendance->load('student', 'classroom')))

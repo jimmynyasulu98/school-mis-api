@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\GradeResource;
+use App\Http\Requests\StoreGradeRequest;
 use App\Models\Assessment;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
@@ -17,8 +18,20 @@ class GradeController extends BaseApiController
      *     summary="List grade entries with pagination and optional included relationships",
      *     description="Retrieve a paginated list of grade entries. Use 'includes' parameter to eager load related resources (assessment, student).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -102,21 +115,15 @@ class GradeController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreGradeRequest $request)
     {
-        $payload = $request->validate([
-            'student_id' => ['required', 'uuid', 'exists:students,id'],
-            'assessment_id' => ['required', 'uuid', 'exists:assessments,id'],
-            'marks_obtained' => ['required', 'numeric', 'min:0'],
-            'remarks' => ['nullable', 'string', 'max:500'],
-        ]);
-
+        $payload = $request->validated();
         $assessment = Assessment::findOrFail($payload['assessment_id']);
 
-        $grade = DB::transaction(function () use ($payload, $assessment, $request) {
+        $grade = DB::transaction(function () use ($payload, $assessment) {
             // Calculate percentage
-            $percentage = $assessment->marks_obtained > 0 
-                ? ($payload['marks_obtained'] / $assessment->marks_obtained) * 100 
+            $percentage = $assessment->marks_obtained > 0
+                ? ($payload['marks_obtained'] / $assessment->marks_obtained) * 100
                 : 0;
 
             return StudentGrade::updateOrCreate(

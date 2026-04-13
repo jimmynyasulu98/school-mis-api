@@ -659,29 +659,5 @@ namespace App\OpenApi;
  *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
  *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
  * )
- *
- * @OA\Parameter(
- *     name="per_page",
- *     in="query",
- *     description="Number of records per page (default 10, max 100)",
- *     required=false,
- *     @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
- * )
- *
- * @OA\Parameter(
- *     name="page",
- *     in="query",
- *     description="Page number for pagination",
- *     required=false,
- *     @OA\Schema(type="integer", default=1, minimum=1)
- * )
- *
- * @OA\Parameter(
- *     name="includes",
- *     in="query",
- *     description="Comma-separated list of related resources to include (e.g., includes=currentClassRoom,guardians)",
- *     required=false,
- *     @OA\Schema(type="string", example="currentClassRoom,guardians")
- * )
  */
 class OpenApiComponents {}

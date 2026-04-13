@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\AssessmentResource;
+use App\Http\Requests\StoreAssessmentRequest;
+use App\Http\Requests\UpdateAssessmentRequest;
 use App\Models\Assessment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AssessmentController extends BaseApiController
 {
@@ -15,8 +18,20 @@ class AssessmentController extends BaseApiController
      *     summary="List assessments with pagination and optional included relationships",
      *     description="Retrieve a paginated list of assessments. Use 'includes' parameter to eager load related resources (type, subject, classroom, academicYear, term, grades).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -82,17 +97,9 @@ class AssessmentController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreAssessmentRequest $request)
     {
-        $assessment = Assessment::create($request->validate([
-            'assessment_type_id' => ['required', 'uuid', 'exists:assessment_types,id'],
-            'subject_id' => ['required', 'uuid', 'exists:subjects,id'],
-            'class_room_id' => ['required', 'integer', 'exists:class_rooms,id'],
-            'academic_year_id' => ['required', 'uuid', 'exists:academic_years,id'],
-            'term_id' => ['required', 'uuid', 'exists:terms,id'],
-            'date_set' => ['required', 'date'],
-            'description' => ['nullable', 'string', 'max:500'],
-        ]));
+        $assessment = Assessment::create($request->validated());
 
         return (new AssessmentResource($assessment->load('type', 'subject', 'classroom', 'academicYear', 'term')))
             ->response()
@@ -179,12 +186,9 @@ class AssessmentController extends BaseApiController
      *     )
      * )
      */
-    public function update(Request $request, Assessment $assessment)
+    public function update(UpdateAssessmentRequest $request, Assessment $assessment)
     {
-        $assessment->update($request->validate([
-            'date_set' => ['sometimes', 'date'],
-            'description' => ['sometimes', 'nullable', 'string', 'max:500'],
-        ]));
+        $assessment->update($request->validated());
 
         return AssessmentResource::make($assessment->fresh()->load('type', 'subject', 'classroom', 'academicYear', 'term'));
     }

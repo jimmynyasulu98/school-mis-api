@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\PaymentResource;
+use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\StudentFeeAccount;
@@ -18,8 +19,20 @@ class PaymentController extends BaseApiController
      *     summary="List all payments with pagination and optional included relationships",
      *     description="Retrieve a paginated list of payments. Use 'includes' parameter to eager load related resources (account, account.student, account.feeStructure, recorder).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -86,17 +99,10 @@ class PaymentController extends BaseApiController
      *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
-     *)
      */
-    public function store(Request $request)
+    public function store(StorePaymentRequest $request)
     {
-        $payload = $request->validate([
-            'student_fee_account_id' => ['required', 'uuid', 'exists:student_fee_accounts,id'],
-            'amount_paid' => ['required', 'numeric', 'min:0.01'],
-            'payment_date' => ['required', 'date'],
-            'payment_method' => ['nullable', 'string', 'max:50'],
-            'receipt_number' => ['required', 'string', 'max:255', 'unique:payments,receipt_number'],
-        ]);
+        $payload = $request->validated();
 
         $payment = DB::transaction(function () use ($payload, $request) {
             $account = StudentFeeAccount::lockForUpdate()->findOrFail($payload['student_fee_account_id']);

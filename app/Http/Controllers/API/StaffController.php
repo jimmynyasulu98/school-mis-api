@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\StaffResource;
+use App\Http\Requests\StoreStaffRequest;
+use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,8 +20,20 @@ class StaffController extends BaseApiController
      *     summary="List all staff members with pagination and optional included relationships",
      *     description="Retrieve a paginated list of staff members. Use 'includes' parameter to eager load related resources (user, roles).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -81,23 +95,9 @@ class StaffController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreStaffRequest $request)
     {
-        $payload = $request->validate([
-            'employee_number' => ['required', 'string', 'max:50', 'unique:staff,employee_number'],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'gender' => ['nullable', 'string', 'max:20'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:staff,email'],
-            'job_title' => ['nullable', 'string', 'max:100'],
-            'hire_date' => ['nullable', 'date'],
-            'status' => ['nullable', 'string', 'max:20'],
-            'username' => ['nullable', 'string', 'max:100', 'unique:users,username'],
-            'password' => ['nullable', 'string', 'min:8'],
-            'roles' => ['array'],
-            'roles.*' => ['string', 'exists:roles,name'],
-        ]);
+        $payload = $request->validated();
 
         $staff = DB::transaction(function () use ($payload) {
             $userData = [
@@ -171,18 +171,9 @@ class StaffController extends BaseApiController
      *     )
      * )
      */
-    public function update(Request $request, Staff $staff)
+    public function update(UpdateStaffRequest $request, Staff $staff)
     {
-        $payload = $request->validate([
-            'first_name' => ['sometimes', 'string', 'max:100'],
-            'last_name' => ['sometimes', 'string', 'max:100'],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
-            'email' => ['sometimes', 'nullable', 'email', 'max:255', 'unique:staff,email,' . $staff->id . ',id'],
-            'job_title' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'status' => ['sometimes', 'string', 'max:20'],
-            'roles' => ['sometimes', 'array'],
-            'roles.*' => ['string', 'exists:roles,name'],
-        ]);
+        $payload = $request->validated();
 
         $roles = $payload['roles'] ?? null;
         unset($payload['roles']);

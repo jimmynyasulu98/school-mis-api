@@ -249,6 +249,11 @@ class GradeStoreRequestSchema {}
 class StudentGradeResourceSchema {}
 
 /**
+ * @OA\Schema(schema="GradeResource", type="object", @OA\Property(property="id", type="string", format="uuid"), @OA\Property(property="student_id", type="string", format="uuid"), @OA\Property(property="assessment_id", type="string", format="uuid"), @OA\Property(property="score", type="number", format="float"), @OA\Property(property="grade_letter", type="string"), @OA\Property(property="remarks", type="string", nullable=true), @OA\Property(property="recorded_by", type="string", format="uuid", nullable=true), @OA\Property(property="recorded_at", type="string", format="date-time", nullable=true), @OA\Property(property="student", type="object"), @OA\Property(property="assessment", type="object"), @OA\Property(property="created_at", type="string", format="date-time"), @OA\Property(property="updated_at", type="string", format="date-time"))
+ */
+class GradeResourceSchema {}
+
+/**
  * @OA\Schema(schema="AttendanceStoreRequest", type="object", required={"student_id","class_room_id","attendance_date","status"}, @OA\Property(property="student_id", type="string", format="uuid"), @OA\Property(property="class_room_id", type="integer"), @OA\Property(property="attendance_date", type="string", format="date"), @OA\Property(property="status", type="string", enum={"PRESENT","ABSENT","LATE","EXCUSED"}))
  */
 class AttendanceStoreRequestSchema {}
@@ -282,3 +287,107 @@ class CollectionsReportItemSchema {}
  * @OA\Schema(schema="ReportCardResponse", type="object", @OA\Property(property="student", type="object"), @OA\Property(property="summary", type="object"), @OA\Property(property="subjects", type="array", @OA\Items(type="object")), @OA\Property(property="grade_history", type="array", @OA\Items(type="object")))
  */
 class ReportCardResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginationMeta",
+ *   type="object",
+ *   @OA\Property(property="current_page", type="integer", example=1),
+ *   @OA\Property(property="from", type="integer", nullable=true, example=1),
+ *   @OA\Property(property="last_page", type="integer", example=10),
+ *   @OA\Property(property="path", type="string", format="uri", example="/api/v1/students"),
+ *   @OA\Property(property="per_page", type="integer", example=10),
+ *   @OA\Property(property="to", type="integer", nullable=true, example=10),
+ *   @OA\Property(property="total", type="integer", example=100)
+ * )
+ */
+class PaginationMetaSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginationLinks",
+ *   type="object",
+ *   @OA\Property(property="first", type="string", format="uri", example="/api/v1/students?page=1"),
+ *   @OA\Property(property="last", type="string", format="uri", example="/api/v1/students?page=10"),
+ *   @OA\Property(property="prev", type="string", format="uri", nullable=true, example=null),
+ *   @OA\Property(property="next", type="string", format="uri", nullable=true, example="/api/v1/students?page=2")
+ * )
+ */
+class PaginationLinksSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedStudentResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StudentResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedStudentResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedStaffResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StaffResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedStaffResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedClassRoomResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClassRoomResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedClassRoomResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedPaymentResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PaymentResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedPaymentResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedAssessmentResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AssessmentResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedAssessmentResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedGradeResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/GradeResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedGradeResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedAttendanceResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AttendanceResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedAttendanceResponseSchema {}

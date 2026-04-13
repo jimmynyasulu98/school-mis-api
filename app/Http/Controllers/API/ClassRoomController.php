@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\ClassRoomResource;
+use App\Http\Requests\StoreClassRoomRequest;
+use App\Http\Requests\UpdateClassRoomRequest;
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 
@@ -15,8 +17,20 @@ class ClassRoomController extends BaseApiController
      *     summary="List classes with pagination and optional included relationships",
      *     description="Retrieve a paginated list of classes. Use 'includes' parameter to eager load related resources (classTeacher, students, subjects, enrollments).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -82,14 +96,9 @@ class ClassRoomController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreClassRoomRequest $request)
     {
-        $classroom = ClassRoom::create($request->validate([
-            'class_name' => ['required', 'string', 'max:100', 'unique:class_rooms,class_name'],
-            'form' => ['required', 'integer'],
-            'stream' => ['nullable', 'string', 'max:50'],
-            'class_teacher_id' => ['nullable', 'integer', 'exists:staff,id'],
-        ]));
+        $classroom = ClassRoom::create($request->validated());
 
         return (new ClassRoomResource($classroom->load('classTeacher')))
             ->response()
@@ -98,70 +107,126 @@ class ClassRoomController extends BaseApiController
 
     /**
      * @OA\Get(
-     *     path="/api/v1/classes/{class}",
+     *     path="/api/v1/classes/{classroom}",
      *     tags={"Classes"},
-     *     summary="Show a class",
+     *     summary="Show a class details",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="class", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="classroom",
+     *         in="path",
+     *         description="Classroom ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Class detail",
+     *         description="Class retrieved successfully",
      *         @OA\JsonContent(ref="#/components/schemas/ClassRoomResource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Class not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Not Found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
-    public function show(ClassRoom $class)
+    public function show(ClassRoom $classroom)
     {
-        return $class->load('classTeacher');
+        return ClassRoomResource::make($classroom->load('classTeacher', 'students', 'subjects', 'enrollments'));
     }
 
     /**
-     * @OA\Patch(
-     *     path="/api/v1/classes/{class}",
+     * @OA\Put(
+     *     path="/api/v1/classes/{classroom}",
      *     tags={"Classes"},
      *     summary="Update a class",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="class", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="classroom",
+     *         in="path",
+     *         description="Classroom ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/ClassRoomUpdateRequest")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Class updated",
+     *         description="Class updated successfully",
      *         @OA\JsonContent(ref="#/components/schemas/ClassRoomResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Class not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Not Found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
-    public function update(Request $request, ClassRoom $class)
+    public function update(UpdateClassRoomRequest $request, ClassRoom $classroom)
     {
-        $class->update($request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
-            'stream' => ['sometimes', 'nullable', 'string', 'max:20'],
-            'section' => ['sometimes', 'nullable', 'string', 'max:30'],
-            'class_teacher_id' => ['sometimes', 'nullable', 'uuid', 'exists:staff,id'],
-        ]));
+        $classroom->update($request->validated());
 
-        return $class->fresh('classTeacher');
+        return ClassRoomResource::make($classroom->fresh()->load('classTeacher'));
     }
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/classes/{class}",
+     *     path="/api/v1/classes/{classroom}",
      *     tags={"Classes"},
      *     summary="Delete a class",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="class", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="classroom",
+     *         in="path",
+     *         description="Classroom ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Class deleted",
-     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *         response=204,
+     *         description="Class deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Class not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Not Found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
-    public function destroy(ClassRoom $class)
+    public function destroy(ClassRoom $classroom)
     {
-        $class->delete();
-        return response()->json(['message' => 'Class deleted.']);
+        $classroom->delete();
+        return response()->noContent();
     }
 }

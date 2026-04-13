@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Resources\StudentResource;
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +18,20 @@ class StudentController extends BaseApiController
      *     summary="List all students with pagination and optional included relationships",
      *     description="Retrieve a paginated list of students. Use 'includes' parameter to eager load related resources (currentClassRoom, guardians, enrollments, feeAccounts).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(ref="#/components/parameters/page"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number for pagination",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1, minimum=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of records per page (default 10, max 100)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+     *     ),
      *     @OA\Parameter(
      *         name="includes",
      *         in="query",
@@ -85,22 +99,9 @@ class StudentController extends BaseApiController
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request)
     {
-        $payload = $request->validate([
-            'admission_number' => ['required', 'string', 'max:50', 'unique:students,admission_number'],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'gender' => ['nullable', 'string', 'max:20'],
-            'date_of_birth' => ['nullable', 'date'],
-            'enrollment_date' => ['required', 'date'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'current_class_room_id' => ['nullable', 'integer', 'exists:class_rooms,id'],
-            'guardians' => ['array'],
-            'guardians.*.id' => ['required_with:guardians', 'uuid', 'exists:guardians,id'],
-            'guardians.*.is_primary' => ['nullable', 'boolean'],
-            'guardians.*.notes' => ['nullable', 'string', 'max:255'],
-        ]);
+        $payload = $request->validated();
 
         $student = DB::transaction(function () use ($payload) {
             $guardians = $payload['guardians'] ?? [];
@@ -203,20 +204,13 @@ class StudentController extends BaseApiController
      *     )
      * )
      */
-    public function update(Request $request, Student $student)
+    public function update(UpdateStudentRequest $request, Student $student)
     {
-        $payload = $request->validate([
-            'first_name' => ['nullable', 'string', 'max:100'],
-            'last_name' => ['nullable', 'string', 'max:100'],
-            'gender' => ['nullable', 'string', 'max:20'],
-            'date_of_birth' => ['nullable', 'date'],
-            'status' => ['nullable', 'string', 'max:30'],
-            'current_class_room_id' => ['nullable', 'integer', 'exists:class_rooms,id'],
-        ]);
+        $payload = $request->validated();
 
         $student->update($payload);
 
-        return StudentResource::make($student->load(['currentClassRoom', 'guardians']));
+        return StudentResource::make($student->fresh()->load(['currentClassRoom', 'guardians']));
     }
 
     /**

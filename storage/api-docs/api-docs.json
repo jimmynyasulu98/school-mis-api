@@ -219,20 +219,73 @@
                 "tags": [
                     "Assessments"
                 ],
-                "summary": "List assessments",
+                "summary": "List assessments with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of assessments. Use 'includes' parameter to eager load related resources (type, subject, classroom, academicYear, term, grades).",
                 "operationId": "54b0781f5259e064bdf00cea5d91094b",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: type, subject, classroom, academicYear, term, grades",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "type,subject,grades"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Assessment collection",
+                        "description": "Assessment collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedAssessmentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/AssessmentResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -264,12 +317,32 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Assessment created",
+                    "201": {
+                        "description": "Assessment created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -287,12 +360,13 @@
                 "tags": [
                     "Assessments"
                 ],
-                "summary": "Show an assessment",
+                "summary": "Show an assessment details",
                 "operationId": "f6197d1aa5948e8a3780e88dbe3f2151",
                 "parameters": [
                     {
                         "name": "assessment",
                         "in": "path",
+                        "description": "Assessment ID (UUID)",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -302,11 +376,37 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Assessment detail",
+                        "description": "Assessment retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Assessment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -318,16 +418,17 @@
                     }
                 ]
             },
-            "patch": {
+            "put": {
                 "tags": [
                     "Assessments"
                 ],
                 "summary": "Update an assessment",
-                "operationId": "3c62ad3a915c60be98944f58a6f35357",
+                "operationId": "14464d4058d1f58a527a0f02e6ab32ce",
                 "parameters": [
                     {
                         "name": "assessment",
                         "in": "path",
+                        "description": "Assessment ID (UUID)",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -347,11 +448,47 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Assessment updated",
+                        "description": "Assessment updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AssessmentResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Assessment not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -369,13 +506,46 @@
                 "tags": [
                     "Attendance"
                 ],
-                "summary": "List attendance records",
+                "summary": "List attendance records with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of attendance records. Use 'includes' parameter to eager load related resources (student, classroom).",
                 "operationId": "a6932099c47f053aa5e73855af59233b",
                 "parameters": [
                     {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: student, classroom",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "student,classroom"
+                    },
+                    {
                         "name": "student_id",
                         "in": "query",
-                        "required": false,
+                        "description": "Filter by student ID",
                         "schema": {
                             "type": "string",
                             "format": "uuid"
@@ -384,7 +554,7 @@
                     {
                         "name": "class_room_id",
                         "in": "query",
-                        "required": false,
+                        "description": "Filter by classroom ID",
                         "schema": {
                             "type": "integer"
                         }
@@ -392,16 +562,34 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Attendance collection",
+                        "description": "Attendance collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedAttendanceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/AttendanceResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -434,11 +622,31 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Attendance saved",
+                        "description": "Attendance recorded successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AttendanceResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -569,20 +777,73 @@
                 "tags": [
                     "Classes"
                 ],
-                "summary": "List classes",
+                "summary": "List classes with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of classes. Use 'includes' parameter to eager load related resources (classTeacher, students, subjects, enrollments).",
                 "operationId": "abd05457d38f78d3b7f4ea825fd1b863",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: classTeacher, students, subjects, enrollments",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "classTeacher,students"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Class collection",
+                        "description": "Class collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedClassRoomResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/ClassRoomResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -614,12 +875,32 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Class created",
+                    "201": {
+                        "description": "Class created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ClassRoomResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -632,17 +913,18 @@
                 ]
             }
         },
-        "/api/v1/classes/{class}": {
+        "/api/v1/classes/{classroom}": {
             "get": {
                 "tags": [
                     "Classes"
                 ],
-                "summary": "Show a class",
-                "operationId": "a61d50e9e9ff20b9b8f38e1318439aa1",
+                "summary": "Show a class details",
+                "operationId": "f59cc91de797f4e5e93779838458aec3",
                 "parameters": [
                     {
-                        "name": "class",
+                        "name": "classroom",
                         "in": "path",
+                        "description": "Classroom ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -651,7 +933,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Class detail",
+                        "description": "Class retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -659,37 +941,29 @@
                                 }
                             }
                         }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Classes"
-                ],
-                "summary": "Delete a class",
-                "operationId": "c9da6a7ebd8f798ec94b73c6e4c9a1de",
-                "parameters": [
-                    {
-                        "name": "class",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Class deleted",
+                    },
+                    "404": {
+                        "description": "Class not found",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -701,16 +975,17 @@
                     }
                 ]
             },
-            "patch": {
+            "put": {
                 "tags": [
                     "Classes"
                 ],
                 "summary": "Update a class",
-                "operationId": "13ed13a139c51959156a1d09bf4c1418",
+                "operationId": "38a408cdbe7e4f4a9a66c080ea6bcea2",
                 "parameters": [
                     {
-                        "name": "class",
+                        "name": "classroom",
                         "in": "path",
+                        "description": "Classroom ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -729,11 +1004,101 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Class updated",
+                        "description": "Class updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ClassRoomResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Class not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classes"
+                ],
+                "summary": "Delete a class",
+                "operationId": "3d20629c9a551884134cf20213d586ca",
+                "parameters": [
+                    {
+                        "name": "classroom",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Class deleted successfully"
+                    },
+                    "404": {
+                        "description": "Class not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -751,13 +1116,46 @@
                 "tags": [
                     "Grades"
                 ],
-                "summary": "List grade entries",
+                "summary": "List grade entries with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of grade entries. Use 'includes' parameter to eager load related resources (assessment, student).",
                 "operationId": "8474a678a878d31a5f633c9448146db0",
                 "parameters": [
                     {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: assessment, student",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "assessment,student"
+                    },
+                    {
                         "name": "student_id",
                         "in": "query",
-                        "required": false,
+                        "description": "Filter by student ID",
                         "schema": {
                             "type": "string",
                             "format": "uuid"
@@ -766,7 +1164,7 @@
                     {
                         "name": "assessment_id",
                         "in": "query",
-                        "required": false,
+                        "description": "Filter by assessment ID",
                         "schema": {
                             "type": "string",
                             "format": "uuid"
@@ -775,16 +1173,34 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Grade collection",
+                        "description": "Grade collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedGradeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/StudentGradeResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -817,11 +1233,11 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Grade saved",
+                        "description": "Grade recorded successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/StudentGradeResource"
+                                    "$ref": "#/components/schemas/GradeResource"
                                 }
                             }
                         }
@@ -832,6 +1248,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -849,20 +1275,73 @@
                 "tags": [
                     "Payments"
                 ],
-                "summary": "List payments",
+                "summary": "List all payments with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of payments. Use 'includes' parameter to eager load related resources (account, account.student, account.feeStructure, recorder).",
                 "operationId": "541085e1211c4e4d3b10fe7fd2a64294",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: account, account.student, account.feeStructure, recorder",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "account,account.student"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Payment collection",
+                        "description": "Payment collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedPaymentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/PaymentResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -882,8 +1361,10 @@
                     "Payments"
                 ],
                 "summary": "Record a payment and update fee balance",
+                "description": "Create a new payment record for a student fee account",
                 "operationId": "e24f4ae27f77e171d270f539987b4c68",
                 "requestBody": {
+                    "description": "Payment data to record",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -895,11 +1376,31 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Payment saved",
+                        "description": "Payment recorded successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/PaymentResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -1200,20 +1701,73 @@
                 "tags": [
                     "Staff"
                 ],
-                "summary": "List staff members",
+                "summary": "List all staff members with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of staff members. Use 'includes' parameter to eager load related resources (user, roles).",
                 "operationId": "36c4a558ffd2dd9f78e99ee76730e6a2",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: user, roles",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "user,roles"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Staff collection",
+                        "description": "Staff collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedStaffResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/StaffResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -1233,6 +1787,7 @@
                     "Staff"
                 ],
                 "summary": "Create a staff member",
+                "description": "Create a new staff record with optional user account and role assignments",
                 "operationId": "b31adf9101d6ed0e704c6b3a9882ea7d",
                 "requestBody": {
                     "required": true,
@@ -1246,7 +1801,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Staff member created",
+                        "description": "Staff member created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1405,20 +1960,73 @@
                 "tags": [
                     "Students"
                 ],
-                "summary": "List students",
+                "summary": "List all students with pagination and optional included relationships",
+                "description": "Retrieve a paginated list of students. Use 'includes' parameter to eager load related resources (currentClassRoom, guardians, enrollments, feeAccounts).",
                 "operationId": "cac50beb776a7244c2dc5fe90f1a39f4",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page (default 10, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "includes",
+                        "in": "query",
+                        "description": "Comma-separated list of relationships to include. Available: currentClassRoom, guardians, enrollments, feeAccounts",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "currentClassRoom,guardians"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Student collection",
+                        "description": "Student collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedStudentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient permissions",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/StudentResource"
-                                            }
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
                                         }
                                     },
                                     "type": "object"
@@ -1437,9 +2045,11 @@
                 "tags": [
                     "Students"
                 ],
-                "summary": "Create a student",
+                "summary": "Create a new student",
+                "description": "Create a new student record with optional guardian associations",
                 "operationId": "d28cc8d302a5387162cb2d6b92caf291",
                 "requestBody": {
+                    "description": "Student data to create",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -1451,7 +2061,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Student created",
+                        "description": "Student created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1469,6 +2079,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1483,12 +2103,13 @@
                 "tags": [
                     "Students"
                 ],
-                "summary": "Show a student",
+                "summary": "Show a specific student",
                 "operationId": "9b2cb77beec2066cde02027c7a880e14",
                 "parameters": [
                     {
                         "name": "student",
                         "in": "path",
+                        "description": "Student ID (UUID)",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1498,7 +2119,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Student profile",
+                        "description": "Student retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1506,38 +2127,29 @@
                                 }
                             }
                         }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Students"
-                ],
-                "summary": "Deactivate a student",
-                "operationId": "adbd96d1047f7ac0f3471bed17b964a5",
-                "parameters": [
-                    {
-                        "name": "student",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Student deactivated",
+                    },
+                    "404": {
+                        "description": "Student not found",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageResponse"
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -1549,16 +2161,17 @@
                     }
                 ]
             },
-            "patch": {
+            "put": {
                 "tags": [
                     "Students"
                 ],
                 "summary": "Update a student",
-                "operationId": "87abb3d9872505bccd23597ba98324e8",
+                "operationId": "ede6bf5e3d605d113cf5ab09644e1d07",
                 "parameters": [
                     {
                         "name": "student",
                         "in": "path",
+                        "description": "Student ID (UUID)",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1578,7 +2191,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Student updated",
+                        "description": "Student updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1593,6 +2206,87 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Student not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Delete a student",
+                "operationId": "adbd96d1047f7ac0f3471bed17b964a5",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "description": "Student ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Student deleted successfully"
+                    },
+                    "404": {
+                        "description": "Student not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
                                 }
                             }
                         }
@@ -2899,6 +3593,58 @@
                 },
                 "type": "object"
             },
+            "GradeResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "student_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "assessment_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "grade_letter": {
+                        "type": "string"
+                    },
+                    "remarks": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "recorded_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "recorded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "student": {
+                        "type": "object"
+                    },
+                    "assessment": {
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "AttendanceStoreRequest": {
                 "required": [
                     "student_id",
@@ -3109,6 +3855,188 @@
                         "items": {
                             "type": "object"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "path": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/v1/students"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 100
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/v1/students?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/v1/students?page=10"
+                    },
+                    "prev": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/v1/students?page=2",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedStudentResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StudentResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedStaffResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StaffResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedClassRoomResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassRoomResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedPaymentResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PaymentResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedAssessmentResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AssessmentResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedGradeResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/GradeResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedAttendanceResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AttendanceResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
                     }
                 },
                 "type": "object"
