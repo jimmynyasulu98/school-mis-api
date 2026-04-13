@@ -599,7 +599,89 @@ namespace App\OpenApi;
  *     @OA\Property(property="subjects", type="array", @OA\Items(ref="#/components/schemas/ReportCardSubject")),
  *     @OA\Property(property="grade_history", type="array", @OA\Items(type="object"))
  * )
+ *
+ * @OA\Schema(
+ *     schema="PaginationMeta",
+ *     type="object",
+ *     @OA\Property(property="current_page", type="integer", example=1),
+ *     @OA\Property(property="per_page", type="integer", example=10),
+ *     @OA\Property(property="total", type="integer", example=96),
+ *     @OA\Property(property="last_page", type="integer", example=10),
+ *     @OA\Property(property="from", type="integer", example=1),
+ *     @OA\Property(property="to", type="integer", example=10)
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginationLinks",
+ *     type="object",
+ *     @OA\Property(property="first", type="string", format="uri", example="/api/v1/students?page=1"),
+ *     @OA\Property(property="last", type="string", format="uri", example="/api/v1/students?page=10"),
+ *     @OA\Property(property="prev", type="string", format="uri", nullable=true, example=null),
+ *     @OA\Property(property="next", type="string", format="uri", nullable=true, example="/api/v1/students?page=2")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedStudentResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StudentResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedStaffResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StaffResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedPaymentResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PaymentResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedAssessmentResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AssessmentResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedAttendanceResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AttendanceResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Parameter(
+ *     name="per_page",
+ *     in="query",
+ *     description="Number of records per page (default 10, max 100)",
+ *     required=false,
+ *     @OA\Schema(type="integer", default=10, maximum=100, minimum=1)
+ * )
+ *
+ * @OA\Parameter(
+ *     name="page",
+ *     in="query",
+ *     description="Page number for pagination",
+ *     required=false,
+ *     @OA\Schema(type="integer", default=1, minimum=1)
+ * )
+ *
+ * @OA\Parameter(
+ *     name="includes",
+ *     in="query",
+ *     description="Comma-separated list of related resources to include (e.g., includes=currentClassRoom,guardians)",
+ *     required=false,
+ *     @OA\Schema(type="string", example="currentClassRoom,guardians")
+ * )
  */
-class OpenApiComponents
-{
-}
+class OpenApiComponents {}

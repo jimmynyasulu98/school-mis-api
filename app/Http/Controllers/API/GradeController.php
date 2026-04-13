@@ -2,35 +2,65 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Resources\GradeResource;
 use App\Models\Assessment;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class GradeController extends Controller
+class GradeController extends BaseApiController
 {
     /**
      * @OA\Get(
      *     path="/api/v1/grades",
      *     tags={"Grades"},
-     *     summary="List grade entries",
+     *     summary="List grade entries with pagination and optional included relationships",
+     *     description="Retrieve a paginated list of grade entries. Use 'includes' parameter to eager load related resources (assessment, student).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="student_id", in="query", required=false, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Parameter(name="assessment_id", in="query", required=false, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="includes",
+     *         in="query",
+     *         description="Comma-separated list of relationships to include. Available: assessment, student",
+     *         example="assessment,student",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="student_id",
+     *         in="query",
+     *         description="Filter by student ID",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="assessment_id",
+     *         in="query",
+     *         description="Filter by assessment ID",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Grade collection",
+     *         description="Grade collection retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/PaginatedGradeResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StudentGradeResource"))
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
      *     )
      * )
      */
     public function index(Request $request)
     {
-        $query = StudentGrade::with(['student', 'assessment.classSubject.subject', 'assessment.assessmentType']);
+        $query = StudentGrade::query();
 
         if ($request->filled('student_id')) {
             $query->where('student_id', $request->string('student_id'));
@@ -40,7 +70,9 @@ class GradeController extends Controller
             $query->where('assessment_id', $request->string('assessment_id'));
         }
 
-        return response()->json($query->latest('recorded_at')->paginate(20));
+        return GradeResource::collection(
+            $this->applyPaginationAndIncludes($query, $request, 10)
+        );
     }
 
     /**
@@ -55,13 +87,18 @@ class GradeController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Grade saved",
-     *         @OA\JsonContent(ref="#/components/schemas/StudentGradeResource")
+     *         description="Grade recorded successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/GradeResource")
      *     ),
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
      *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
@@ -70,16 +107,17 @@ class GradeController extends Controller
         $payload = $request->validate([
             'student_id' => ['required', 'uuid', 'exists:students,id'],
             'assessment_id' => ['required', 'uuid', 'exists:assessments,id'],
-            'score' => ['required', 'numeric', 'min:0'],
-            'remarks' => ['nullable', 'string'],
+            'marks_obtained' => ['required', 'numeric', 'min:0'],
+            'remarks' => ['nullable', 'string', 'max:500'],
         ]);
 
         $assessment = Assessment::findOrFail($payload['assessment_id']);
-        abort_if($payload['score'] > $assessment->max_score, 422, 'Score cannot exceed max score.');
 
         $grade = DB::transaction(function () use ($payload, $assessment, $request) {
-            $user = $request->user();
-            $percentage = $assessment->max_score > 0 ? ($payload['score'] / $assessment->max_score) * 100 : 0;
+            // Calculate percentage
+            $percentage = $assessment->marks_obtained > 0 
+                ? ($payload['marks_obtained'] / $assessment->marks_obtained) * 100 
+                : 0;
 
             return StudentGrade::updateOrCreate(
                 [
@@ -87,16 +125,17 @@ class GradeController extends Controller
                     'assessment_id' => $payload['assessment_id'],
                 ],
                 [
-                    'score' => $payload['score'],
-                    'grade_letter' => $this->letterGrade($percentage),
+                    'marks_obtained' => $payload['marks_obtained'],
+                    'percentage' => $percentage,
+                    'grade' => $this->letterGrade($percentage),
                     'remarks' => $payload['remarks'] ?? null,
-                    'recorded_by' => $user?->staff_id,
-                    'recorded_at' => now(),
                 ]
             );
         });
 
-        return response()->json($grade->load(['student', 'assessment']), 201);
+        return (new GradeResource($grade->load('assessment', 'student')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     private function letterGrade(float $percentage): string

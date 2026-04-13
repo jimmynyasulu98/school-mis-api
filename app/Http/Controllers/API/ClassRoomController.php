@@ -2,31 +2,57 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Resources\ClassRoomResource;
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 
-class ClassRoomController extends Controller
+class ClassRoomController extends BaseApiController
 {
     /**
      * @OA\Get(
      *     path="/api/v1/classes",
      *     tags={"Classes"},
-     *     summary="List classes",
+     *     summary="List classes with pagination and optional included relationships",
+     *     description="Retrieve a paginated list of classes. Use 'includes' parameter to eager load related resources (classTeacher, students, subjects, enrollments).",
      *     security={{"sanctum":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="includes",
+     *         in="query",
+     *         description="Comma-separated list of relationships to include. Available: classTeacher, students, subjects, enrollments",
+     *         example="classTeacher,students",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Class collection",
+     *         description="Class collection retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/PaginatedClassRoomResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClassRoomResource"))
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ClassRoom::with('classTeacher')->latest()->paginate(15);
+        return ClassRoomResource::collection(
+            $this->applyPaginationAndIncludes(
+                ClassRoom::query(),
+                $request,
+                10
+            )
+        );
     }
 
     /**
@@ -40,20 +66,34 @@ class ClassRoomController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ClassRoomStoreRequest")
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Class created",
+     *         response=201,
+     *         description="Class created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/ClassRoomResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
     public function store(Request $request)
     {
-        return ClassRoom::create($request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'stream' => ['nullable', 'string', 'max:20'],
-            'section' => ['nullable', 'string', 'max:30'],
-            'class_teacher_id' => ['nullable', 'uuid', 'exists:staff,id'],
+        $classroom = ClassRoom::create($request->validate([
+            'class_name' => ['required', 'string', 'max:100', 'unique:class_rooms,class_name'],
+            'form' => ['required', 'integer'],
+            'stream' => ['nullable', 'string', 'max:50'],
+            'class_teacher_id' => ['nullable', 'integer', 'exists:staff,id'],
         ]));
+
+        return (new ClassRoomResource($classroom->load('classTeacher')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**

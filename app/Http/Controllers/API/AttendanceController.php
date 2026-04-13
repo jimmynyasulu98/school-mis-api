@@ -2,33 +2,63 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Resources\AttendanceResource;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 
-class AttendanceController extends Controller
+class AttendanceController extends BaseApiController
 {
     /**
      * @OA\Get(
      *     path="/api/v1/attendance",
      *     tags={"Attendance"},
-     *     summary="List attendance records",
+     *     summary="List attendance records with pagination and optional included relationships",
+     *     description="Retrieve a paginated list of attendance records. Use 'includes' parameter to eager load related resources (student, classroom).",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="student_id", in="query", required=false, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Parameter(name="class_room_id", in="query", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="includes",
+     *         in="query",
+     *         description="Comma-separated list of relationships to include. Available: student, classroom",
+     *         example="student,classroom",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="student_id",
+     *         in="query",
+     *         description="Filter by student ID",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="class_room_id",
+     *         in="query",
+     *         description="Filter by classroom ID",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Attendance collection",
+     *         description="Attendance collection retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/PaginatedAttendanceResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AttendanceResource"))
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
      *     )
      * )
      */
     public function index(Request $request)
     {
-        $query = Attendance::with(['student', 'classRoom'])->latest('attendance_date');
+        $query = Attendance::query();
 
         if ($request->filled('student_id')) {
             $query->where('student_id', $request->string('student_id'));
@@ -38,7 +68,9 @@ class AttendanceController extends Controller
             $query->where('class_room_id', $request->integer('class_room_id'));
         }
 
-        return response()->json($query->paginate(20));
+        return AttendanceResource::collection(
+            $this->applyPaginationAndIncludes($query, $request, 10)
+        );
     }
 
     /**
@@ -53,8 +85,18 @@ class AttendanceController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Attendance saved",
+     *         description="Attendance recorded successfully",
      *         @OA\JsonContent(ref="#/components/schemas/AttendanceResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
@@ -63,22 +105,24 @@ class AttendanceController extends Controller
         $payload = $request->validate([
             'student_id' => ['required', 'uuid', 'exists:students,id'],
             'class_room_id' => ['required', 'integer', 'exists:class_rooms,id'],
-            'attendance_date' => ['required', 'date'],
-            'status' => ['required', 'string', 'in:PRESENT,ABSENT,LATE,EXCUSED'],
+            'date_marked' => ['required', 'date'],
+            'status' => ['required', 'string', 'in:present,absent,excused'],
+            'remarks' => ['nullable', 'string', 'max:500'],
         ]);
 
         $attendance = Attendance::updateOrCreate(
             [
                 'student_id' => $payload['student_id'],
                 'class_room_id' => $payload['class_room_id'],
-                'attendance_date' => $payload['attendance_date'],
+                'date_marked' => $payload['date_marked'],
             ],
-            [
-                'status' => $payload['status'],
-                'recorded_by' => $request->user()?->staff_id,
-            ]
+            array_merge($payload, [
+                'remarks' => $payload['remarks'] ?? null,
+            ])
         );
 
-        return response()->json($attendance->load(['student', 'classRoom']), 201);
+        return (new AttendanceResource($attendance->load('student', 'classroom')))
+            ->response()
+            ->setStatusCode(201);
     }
 }

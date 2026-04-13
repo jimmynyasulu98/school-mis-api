@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\StaffResource;
 use App\Models\Staff;
 use App\Models\User;
@@ -10,27 +9,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class StaffController extends Controller
+class StaffController extends BaseApiController
 {
     /**
      * @OA\Get(
      *     path="/api/v1/staff",
      *     tags={"Staff"},
-     *     summary="List staff members",
+     *     summary="List all staff members with pagination and optional included relationships",
+     *     description="Retrieve a paginated list of staff members. Use 'includes' parameter to eager load related resources (user, roles).",
      *     security={{"sanctum":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="includes",
+     *         in="query",
+     *         description="Comma-separated list of relationships to include. Available: user, roles",
+     *         example="user,roles",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Staff collection",
+     *         description="Staff collection retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/PaginatedStaffResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/StaffResource"))
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return StaffResource::collection(Staff::with('user.roles')->latest()->paginate(15));
+        return StaffResource::collection(
+            $this->applyPaginationAndIncludes(
+                Staff::query(),
+                $request,
+                10
+            )
+        );
     }
 
     /**
@@ -38,6 +63,7 @@ class StaffController extends Controller
      *     path="/api/v1/staff",
      *     tags={"Staff"},
      *     summary="Create a staff member",
+     *     description="Create a new staff record with optional user account and role assignments",
      *     security={{"sanctum":{}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -45,7 +71,7 @@ class StaffController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Staff member created",
+     *         description="Staff member created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/StaffResource")
      *     ),
      *     @OA\Response(
@@ -151,7 +177,7 @@ class StaffController extends Controller
             'first_name' => ['sometimes', 'string', 'max:100'],
             'last_name' => ['sometimes', 'string', 'max:100'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
-            'email' => ['sometimes', 'nullable', 'email', 'max:255', 'unique:staff,email,'.$staff->id.',id'],
+            'email' => ['sometimes', 'nullable', 'email', 'max:255', 'unique:staff,email,' . $staff->id . ',id'],
             'job_title' => ['sometimes', 'nullable', 'string', 'max:100'],
             'status' => ['sometimes', 'string', 'max:20'],
             'roles' => ['sometimes', 'array'],

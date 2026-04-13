@@ -2,35 +2,59 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\StudentFeeAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PaymentController extends Controller
+class PaymentController extends BaseApiController
 {
     /**
      * @OA\Get(
      *     path="/api/v1/payments",
      *     tags={"Payments"},
-     *     summary="List payments",
+     *     summary="List all payments with pagination and optional included relationships",
+     *     description="Retrieve a paginated list of payments. Use 'includes' parameter to eager load related resources (account, account.student, account.feeStructure, recorder).",
      *     security={{"sanctum":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/page"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         name="includes",
+     *         in="query",
+     *         description="Comma-separated list of relationships to include. Available: account, account.student, account.feeStructure, recorder",
+     *         example="account,account.student",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Payment collection",
+     *         description="Payment collection retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/PaginatedPaymentResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PaymentResource"))
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(
-            Payment::with(['account.student', 'account.feeStructure.term'])->latest('payment_date')->paginate(20)
+        return PaymentResource::collection(
+            $this->applyPaginationAndIncludes(
+                Payment::query(),
+                $request,
+                10
+            )
         );
     }
 
@@ -39,17 +63,30 @@ class PaymentController extends Controller
      *     path="/api/v1/payments",
      *     tags={"Payments"},
      *     summary="Record a payment and update fee balance",
+     *     description="Create a new payment record for a student fee account",
      *     security={{"sanctum":{}}},
      *     @OA\RequestBody(
      *         required=true,
+     *         description="Payment data to record",
      *         @OA\JsonContent(ref="#/components/schemas/PaymentStoreRequest")
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Payment saved",
+     *         description="Payment recorded successfully",
      *         @OA\JsonContent(ref="#/components/schemas/PaymentResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
+     *)
      */
     public function store(Request $request)
     {
@@ -73,7 +110,9 @@ class PaymentController extends Controller
             ]);
         });
 
-        return response()->json($payment->load('account.student'), 201);
+        return (new PaymentResource($payment->load('account.student', 'recorder')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
