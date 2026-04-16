@@ -7,6 +7,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SubjectResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     *
+     * @property int $id
+     * @property string $code
+     * @property string $name
+     * @property string|null $description
+     * @property \Illuminate\Support\Collection|null $classrooms
+     * @property \Illuminate\Support\Collection|null $assessments
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -7,6 +7,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AssessmentResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     * @property int $id
+     * @property int $assessment_type_id    
+     * @property int $subject_id    
+     * @property int $class_room_id    
+     * @property int $academic_year_id    
+     * @property int $term_id    
+     * @property string $date_set    
+     * @property string $description    
+     * @property \stdClass|null $type
+     * @property \stdClass|null $subject
+     * @property \stdClass|null $classroom
+     * @property \stdClass|null $academic_year
+     * @property \stdClass|null $term    
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [

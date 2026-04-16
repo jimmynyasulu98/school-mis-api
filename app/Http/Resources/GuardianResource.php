@@ -7,6 +7,24 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class GuardianResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     * @property int $id
+     * @property string $first_name
+     * @property string $last_name
+     * @property string $relationship
+     * @property string|null $phone_number
+     * @property string|null $email
+     * @property string|null $national_id
+     * @property string|null $occupation
+     * @property string|null $employer
+     * @property \Illuminate\Support\Collection|null $students
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -7,6 +7,26 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FeeStructureResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     *
+     * @property int $id
+     * @property int $class_room_id
+     * @property int $academic_year_id
+     * @property int $term_id
+     * @property float $total_amount
+     *
+     * @property \stdClass|null $classroom
+     * @property \stdClass|null $academic_year
+     * @property \stdClass|null $term
+     * @property array $fee_items
+     *
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -7,6 +7,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class StaffResource extends JsonResource
 {
+/**
+ * Transform the resource into an array.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @return array
+ *
+ * @property int $id
+ * @property string $employee_number
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property string $phone_number
+ * @property string $job_title
+ * @property string $status
+ * @property \stdClass|null $user
+ * @property array $roles
+ * @property array $permissions
+ * @property \Illuminate\Support\Collection|\stdClass[] $class_taught
+ * @property string $created_at
+ * @property string $updated_at
+ */
     public function toArray(Request $request): array
     {
         return [

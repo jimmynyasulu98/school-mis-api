@@ -7,6 +7,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AcademicYearResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     * @property int $id
+     * @property string $year
+     * @property bool $is_active
+     * @property \Illuminate\Support\Collection|null $terms
+     * @property string $created_at
+     * @property string $updated_at 
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -7,6 +7,30 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class StudentResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     *
+     * @property int $id
+     * @property string $admission_number
+     * @property string $first_name
+     * @property string $last_name
+     * @property string $gender
+     * @property string $date_of_birth
+     * @property string $enrollment_date
+     * @property string $status
+     *
+     * @property \stdClass|null $currentClassRoom
+     * @property \Illuminate\Support\Collection|null $guardians
+     * @property \Illuminate\Support\Collection|null $enrollments
+     * @property \Illuminate\Support\Collection|null $fee_accounts
+     * @property array $attendance
+     * @property \Illuminate\Support\Collection|null $grades
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -7,6 +7,22 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClassEnrollmentResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     *
+     * @property int $id
+     * @property int $student_id
+     * @property int $class_room_id
+     * @property string $enrolled_at
+     * @property bool $is_active
+     * @property \stdClass|null $student
+     * @property \stdClass|null $classroom
+     * @property string $created_at
+     * @property string $updated_at
+     */
     public function toArray(Request $request): array
     {
         return [
