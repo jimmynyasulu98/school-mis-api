@@ -30,4 +30,9 @@ class ClassSubject extends Model
     {
         return $this->hasMany(Assessment::class);
     }
+
+    public function isAssignedToStaff(?string $staffId): bool
+    {
+        return $staffId !== null && $this->teacher_id === $staffId;
+    }
 }

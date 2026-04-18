@@ -121,20 +121,14 @@ class GradeController extends BaseApiController
         $assessment = Assessment::findOrFail($payload['assessment_id']);
 
         $grade = DB::transaction(function () use ($payload, $assessment) {
-            // Calculate percentage
-            $percentage = $assessment->marks_obtained > 0
-                ? ($payload['marks_obtained'] / $assessment->marks_obtained) * 100
-                : 0;
-
             return StudentGrade::updateOrCreate(
                 [
                     'student_id' => $payload['student_id'],
                     'assessment_id' => $payload['assessment_id'],
                 ],
                 [
-                    'marks_obtained' => $payload['marks_obtained'],
-                    'percentage' => $percentage,
-                    'grade' => $this->letterGrade($percentage),
+                    'score' => $payload['marks_obtained'],
+                    'grade_letter' => $this->letterGrade($payload['marks_obtained'], $assessment->max_score),
                     'remarks' => $payload['remarks'] ?? null,
                 ]
             );
@@ -145,8 +139,10 @@ class GradeController extends BaseApiController
             ->setStatusCode(201);
     }
 
-    private function letterGrade(float $percentage): string
+    private function letterGrade(float $score, float $maxScore): string
     {
+        $percentage = $maxScore > 0 ? ($score / $maxScore) * 100 : 0;
+        
         return match (true) {
             $percentage >= 80 => 'A',
             $percentage >= 70 => 'B',

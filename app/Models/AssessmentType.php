@@ -9,5 +9,10 @@ class AssessmentType extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'weight'];
+    protected $fillable = ['name', 'code', 'weight', 'creation_permission'];
+
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
 }

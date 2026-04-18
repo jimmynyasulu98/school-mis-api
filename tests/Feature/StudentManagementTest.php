@@ -17,7 +17,7 @@ class StudentManagementTest extends TestCase
 
     public function test_authorized_user_can_create_and_view_a_student(): void
     {
-        $user = $this->actingUserWithPermissions(['students.view', 'students.manage']);
+        $user = $this->actingUserWithPermissions(['students.view', 'students.create']);
         Sanctum::actingAs($user);
 
         $createResponse = $this->postJson('/api/v1/students', [

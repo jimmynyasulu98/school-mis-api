@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Assessment;
+use App\Policies\AssessmentPolicy;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Gate::policy(Assessment::class, AssessmentPolicy::class);
     }
 }

@@ -122,7 +122,7 @@ class AttendanceController extends BaseApiController
             [
                 'student_id' => $payload['student_id'],
                 'class_room_id' => $payload['class_room_id'],
-                'date_marked' => $payload['date_marked'],
+                'attendance_date' => $payload['attendance_date'],
             ],
             $payload
         );

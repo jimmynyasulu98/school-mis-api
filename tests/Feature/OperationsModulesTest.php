@@ -30,11 +30,11 @@ class OperationsModulesTest extends TestCase
     public function test_can_record_grade_payment_attendance_and_fetch_report_card(): void
     {
         $user = $this->actingUserWithPermissions([
-            'grades.manage',
-            'finance.manage',
-            'students.manage',
+            'grades.create',
+            'payments.create',
+            'attendance.create',
             'students.view',
-            'reports.view',
+            'reports.academic',
         ]);
 
         Sanctum::actingAs($user);
@@ -96,7 +96,7 @@ class OperationsModulesTest extends TestCase
         $this->postJson('/api/v1/grades', [
             'student_id' => $student->id,
             'assessment_id' => $assessment->id,
-            'score' => 82,
+            'marks_obtained' => 82,
             'remarks' => 'Strong work',
         ])->assertCreated();
 
@@ -112,7 +112,7 @@ class OperationsModulesTest extends TestCase
             'student_id' => $student->id,
             'class_room_id' => $classRoom->id,
             'attendance_date' => '2026-02-21',
-            'status' => 'PRESENT',
+            'status' => 'present',
         ])->assertCreated();
 
         $this->assertDatabaseCount('student_grades', 1);

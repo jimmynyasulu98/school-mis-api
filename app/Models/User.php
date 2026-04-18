@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ClassSubject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,5 +53,10 @@ class User extends Authenticatable
     public function guardian()
     {
         return $this->belongsTo(Guardian::class);
+    }
+
+    public function isAssignedTeacherForClassSubject(ClassSubject $classSubject): bool
+    {
+        return $this->staff_id !== null && $classSubject->isAssignedToStaff($this->staff_id);
     }
 }

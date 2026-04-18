@@ -7,13 +7,29 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AttendanceResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     * @property string $id
+     * @property string $student_id
+     * @property int $class_room_id
+     * @property string $attendance_date
+     * @property string $status
+     * @property string $remarks
+     * @property \stdClass|null $student
+     * @property \stdClass|null $classroom
+     * @property string $created_at
+     * @property string $updated_at 
+     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'student_id' => $this->student_id,
             'class_room_id' => $this->class_room_id,
-            'date_marked' => $this->date_marked?->toDateString(),
+            'attendance_date' => $this->attendance_date?->toDateString(),
             'status' => $this->status,
             'remarks' => $this->remarks,
             
@@ -26,13 +42,11 @@ class AttendanceResource extends JsonResource
                     'last_name' => $this->student->last_name,
                     
                     // If enrollment is also loaded
-                    'current_class' => $this->student->whenLoaded('currentClassRoom', function () {
-                        return [
-                            'id' => $this->student->currentClassRoom->id,
-                            'class_name' => $this->student->currentClassRoom->class_name,
-                            'form' => $this->student->currentClassRoom->form,
-                        ];
-                    }),
+                    'current_class' => isset($this->student->currentClassRoom) ? [
+                        'id' => $this->student->currentClassRoom->id,
+                        'class_name' => $this->student->currentClassRoom->class_name,
+                        'form' => $this->student->currentClassRoom->form,
+                    ] : null,
                 ];
             }),
             

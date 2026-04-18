@@ -63,6 +63,7 @@ class RbacSeeder extends Seeder
             // Assessments and Grades
             ['name' => 'assessments.view', 'description' => 'View assessments'],
             ['name' => 'assessments.create', 'description' => 'Create assessments'],
+            ['name' => 'assessments.create.end-of-term', 'description' => 'Create end of term assessments for any assigned teacher or class subject'],
             ['name' => 'assessments.edit', 'description' => 'Edit assessments'],
             ['name' => 'assessments.delete', 'description' => 'Delete assessments'],
             ['name' => 'assessments.manage', 'description' => 'Manage assessments'],
@@ -143,6 +144,9 @@ class RbacSeeder extends Seeder
                 'terms.view',
                 'academic-years.view',
                 'assessments.view',
+                'assessments.create',
+                'assessments.create.end-of-term',
+                'assessments.edit',
                 'grades.view',
                 'attendance.view',
                 'payments.view',

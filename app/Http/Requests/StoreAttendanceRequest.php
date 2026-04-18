@@ -16,7 +16,7 @@ class StoreAttendanceRequest extends FormRequest
         return [
             'student_id' => ['required', 'uuid', 'exists:students,id'],
             'class_room_id' => ['required', 'integer', 'exists:class_rooms,id'],
-            'date_marked' => ['required', 'date'],
+            'attendance_date' => ['required', 'date'],
             'status' => ['required', 'string', 'in:present,absent,excused'],
             'remarks' => ['nullable', 'string', 'max:500'],
         ];

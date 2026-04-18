@@ -14,8 +14,12 @@ class UpdateAssessmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date_set' => ['sometimes', 'date'],
-            'description' => ['sometimes', 'nullable', 'string', 'max:500'],
+            'assessment_type_id' => ['sometimes', 'integer', 'exists:assessment_types,id'],
+            'class_subject_id' => ['sometimes', 'integer', 'exists:class_subjects,id'],
+            'term_id' => ['sometimes', 'integer', 'exists:terms,id'],
+            'title' => ['sometimes', 'string', 'max:255'],
+            'max_score' => ['sometimes', 'numeric', 'gt:0'],
+            'assessment_date' => ['sometimes', 'date'],
         ];
     }
 }

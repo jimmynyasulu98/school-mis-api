@@ -6,8 +6,9 @@ use App\Http\Resources\AssessmentResource;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Requests\UpdateAssessmentRequest;
 use App\Models\Assessment;
+use App\Models\AssessmentType;
+use App\Models\ClassSubject;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AssessmentController extends BaseApiController
 {
@@ -61,9 +62,16 @@ class AssessmentController extends BaseApiController
      */
     public function index(Request $request)
     {
+        $query = Assessment::query()->with([
+            'assessmentType',
+            'classSubject.classRoom',
+            'classSubject.subject',
+            'term.academicYear',
+        ]);
+
         return AssessmentResource::collection(
             $this->applyPaginationAndIncludes(
-                Assessment::query(),
+                $query,
                 $request,
                 10
             )
@@ -99,9 +107,20 @@ class AssessmentController extends BaseApiController
      */
     public function store(StoreAssessmentRequest $request)
     {
-        $assessment = Assessment::create($request->validated());
+        $payload = $request->validated();
+        $assessmentType = AssessmentType::findOrFail($payload['assessment_type_id']);
+        $classSubject = ClassSubject::with(['classRoom', 'subject'])->findOrFail($payload['class_subject_id']);
 
-        return (new AssessmentResource($assessment->load('type', 'subject', 'classroom', 'academicYear', 'term')))
+        $this->authorize('create', [Assessment::class, $assessmentType, $classSubject]);
+
+        $assessment = Assessment::create($payload);
+
+        return (new AssessmentResource($assessment->load([
+            'assessmentType',
+            'classSubject.classRoom',
+            'classSubject.subject',
+            'term.academicYear',
+        ])))
             ->response()
             ->setStatusCode(201);
     }
@@ -141,7 +160,15 @@ class AssessmentController extends BaseApiController
      */
     public function show(Assessment $assessment)
     {
-        return AssessmentResource::make($assessment->load('type', 'subject', 'classroom', 'academicYear', 'term', 'grades'));
+        $this->authorize('view', $assessment);
+
+        return AssessmentResource::make($assessment->load([
+            'assessmentType',
+            'classSubject.classRoom',
+            'classSubject.subject',
+            'term.academicYear',
+            'grades',
+        ]));
     }
 
     /**
@@ -188,8 +215,23 @@ class AssessmentController extends BaseApiController
      */
     public function update(UpdateAssessmentRequest $request, Assessment $assessment)
     {
-        $assessment->update($request->validated());
+        $payload = $request->validated();
+        $assessmentType = isset($payload['assessment_type_id'])
+            ? AssessmentType::findOrFail($payload['assessment_type_id'])
+            : $assessment->assessmentType()->firstOrFail();
+        $classSubject = isset($payload['class_subject_id'])
+            ? ClassSubject::findOrFail($payload['class_subject_id'])
+            : $assessment->classSubject()->firstOrFail();
 
-        return AssessmentResource::make($assessment->fresh()->load('type', 'subject', 'classroom', 'academicYear', 'term'));
+        $this->authorize('update', [$assessment, $assessmentType, $classSubject]);
+
+        $assessment->update($payload);
+
+        return AssessmentResource::make($assessment->fresh()->load([
+            'assessmentType',
+            'classSubject.classRoom',
+            'classSubject.subject',
+            'term.academicYear',
+        ]));
     }
 }
