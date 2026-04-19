@@ -1111,6 +1111,275 @@
                 ]
             }
         },
+        "/api/v1/class-subjects": {
+            "get": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "List class subjects and teacher assignments",
+                "operationId": "531b2a4a36293f10b2b0b3d65f54ec3b",
+                "responses": {
+                    "200": {
+                        "description": "Class subject collection retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedClassSubjectResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Create a class subject with optional teacher assignments",
+                "operationId": "645d5c7fb0003b78d57fda8b2987d8a2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClassSubjectStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Class subject created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassSubjectResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/class-subjects/{classSubject}": {
+            "get": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Show a class subject and all teacher assignments",
+                "operationId": "427077e775443ee0cf04c9ea5c3dd6be",
+                "parameters": [
+                    {
+                        "name": "classSubject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Class subject retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassSubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Delete a class subject",
+                "operationId": "fc9d163d780ad9d24a30b612731d2b1e",
+                "parameters": [
+                    {
+                        "name": "classSubject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Class subject deleted successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/class-subjects/{classSubject}/teachers": {
+            "post": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Assign or update a teacher on a class subject",
+                "operationId": "9431438ec9f6a797e9a93eb2216dbbd4",
+                "parameters": [
+                    {
+                        "name": "classSubject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClassSubjectTeacherAssignRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Teacher assignment saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassSubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/class-subjects/{classSubject}/teachers/{teacher}/core": {
+            "patch": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Switch the core teacher for a class subject",
+                "operationId": "d1c42bbbdc75edecbb8fea9b0cf1c94a",
+                "parameters": [
+                    {
+                        "name": "classSubject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "teacher",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Core teacher switched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassSubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/class-subjects/{classSubject}/teachers/{teacher}": {
+            "delete": {
+                "tags": [
+                    "Class Subjects"
+                ],
+                "summary": "Unassign a teacher from a class subject",
+                "operationId": "6add8ee68e083a852942b1b15d338509",
+                "parameters": [
+                    {
+                        "name": "classSubject",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "teacher",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Teacher unassigned successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClassSubjectResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/grades": {
             "get": {
                 "tags": [
@@ -3345,6 +3614,138 @@
                 },
                 "type": "object"
             },
+            "ClassSubjectTeacherAssignment": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    },
+                    "teacher": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "employee_number": {
+                                "type": "string"
+                            },
+                            "first_name": {
+                                "type": "string"
+                            },
+                            "last_name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ClassSubjectTeacherAssignmentInput": {
+                "required": [
+                    "teacher_id"
+                ],
+                "properties": {
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "ClassSubjectStoreRequest": {
+                "required": [
+                    "class_room_id",
+                    "subject_id"
+                ],
+                "properties": {
+                    "class_room_id": {
+                        "type": "integer"
+                    },
+                    "subject_id": {
+                        "type": "integer"
+                    },
+                    "teacher_assignments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassSubjectTeacherAssignmentInput"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ClassSubjectTeacherAssignRequest": {
+                "required": [
+                    "teacher_id"
+                ],
+                "properties": {
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "is_core": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "ClassSubjectResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "class_room_id": {
+                        "type": "integer"
+                    },
+                    "subject_id": {
+                        "type": "integer"
+                    },
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "core_teacher_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "class_room": {
+                        "type": "object"
+                    },
+                    "subject": {
+                        "$ref": "#/components/schemas/SubjectResource"
+                    },
+                    "core_teacher": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "teacher_assignments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassSubjectTeacherAssignment"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "AssessmentStoreRequest": {
                 "required": [
                     "class_subject_id",
@@ -4007,6 +4408,23 @@
                 },
                 "type": "object"
             },
+            "PaginatedClassSubjectResponse": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassSubjectResource"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                },
+                "type": "object"
+            },
             "PaginatedGradeResponse": {
                 "properties": {
                     "data": {
@@ -4078,6 +4496,10 @@
         {
             "name": "Subjects",
             "description": "Subject catalog management"
+        },
+        {
+            "name": "Class Subjects",
+            "description": "Subject offerings per class and assigned teachers"
         },
         {
             "name": "Assessments",

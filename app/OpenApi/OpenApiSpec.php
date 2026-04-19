@@ -25,6 +25,7 @@ namespace App\OpenApi;
  * @OA\Tag(name="Terms", description="Academic term management")
  * @OA\Tag(name="Classes", description="Classroom management")
  * @OA\Tag(name="Subjects", description="Subject catalog management")
+ * @OA\Tag(name="Class Subjects", description="Subject offerings per class and assigned teachers")
  * @OA\Tag(name="Assessments", description="Assessment management")
  * @OA\Tag(name="Grades", description="Grade entry and reporting")
  * @OA\Tag(name="Payments", description="Fee payments and balances")

@@ -322,6 +322,73 @@ namespace App\OpenApi;
  * )
  *
  * @OA\Schema(
+ *     schema="ClassSubjectTeacherAssignment",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *     @OA\Property(property="is_core", type="boolean", example=true),
+ *     @OA\Property(
+ *         property="teacher",
+ *         type="object",
+ *         @OA\Property(property="id", type="string", format="uuid"),
+ *         @OA\Property(property="employee_number", type="string", example="EMP-1001"),
+ *         @OA\Property(property="first_name", type="string", example="John"),
+ *         @OA\Property(property="last_name", type="string", example="Phiri")
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ClassSubjectResource",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="class_room_id", type="integer", example=1),
+ *     @OA\Property(property="subject_id", type="integer", example=1),
+ *     @OA\Property(property="teacher_id", type="string", format="uuid", nullable=true),
+ *     @OA\Property(property="core_teacher_id", type="string", format="uuid", nullable=true),
+ *     @OA\Property(property="class_room", ref="#/components/schemas/ClassRoomSummary"),
+ *     @OA\Property(property="subject", ref="#/components/schemas/SubjectResource"),
+ *     @OA\Property(property="core_teacher", ref="#/components/schemas/StaffResource"),
+ *     @OA\Property(property="teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ClassSubjectTeacherAssignmentInput",
+ *     type="object",
+ *     required={"teacher_id"},
+ *     @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *     @OA\Property(property="is_core", type="boolean", example=true)
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ClassSubjectStoreRequest",
+ *     type="object",
+ *     required={"class_room_id","subject_id"},
+ *     @OA\Property(property="class_room_id", type="integer", example=1),
+ *     @OA\Property(property="subject_id", type="integer", example=1),
+ *     @OA\Property(
+ *         property="teacher_assignments",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignmentInput")
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ClassSubjectTeacherAssignRequest",
+ *     type="object",
+ *     required={"teacher_id"},
+ *     @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *     @OA\Property(property="is_core", type="boolean", example=false)
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ClassSubjectCoreTeacherSwitchRequest",
+ *     type="object",
+ *     description="No request body is required. The teacher to promote is provided in the URL path."
+ * )
+ *
+ * @OA\Schema(
  *     schema="AssessmentResource",
  *     type="object",
  *     @OA\Property(property="id", type="string", format="uuid"),
@@ -648,6 +715,14 @@ namespace App\OpenApi;
  *     schema="PaginatedAssessmentResponse",
  *     type="object",
  *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AssessmentResource")),
+ *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="PaginatedClassSubjectResponse",
+ *     type="object",
+ *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectResource")),
  *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
  *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
  * )

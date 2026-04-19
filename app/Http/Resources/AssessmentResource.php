@@ -31,6 +31,7 @@ class AssessmentResource extends JsonResource
                     'class_room_id' => $this->classSubject->class_room_id,
                     'subject_id' => $this->classSubject->subject_id,
                     'teacher_id' => $this->classSubject->teacher_id,
+                    'core_teacher_id' => $this->classSubject->teacher_id,
                     'class_room' => $this->when(
                         $this->classSubject->relationLoaded('classRoom') && $this->classSubject->classRoom !== null,
                         fn() => [
@@ -47,6 +48,24 @@ class AssessmentResource extends JsonResource
                             'name' => $this->classSubject->subject->name,
                             'code' => $this->classSubject->subject->code,
                         ]
+                    ),
+                    'teacher_assignments' => $this->when(
+                        $this->classSubject->relationLoaded('teacherAssignments'),
+                        fn () => $this->classSubject->teacherAssignments->map(function ($assignment) {
+                            return [
+                                'id' => $assignment->id,
+                                'teacher_id' => $assignment->teacher_id,
+                                'is_core' => (bool) $assignment->is_core,
+                                'teacher' => $assignment->relationLoaded('teacher') && $assignment->teacher !== null
+                                    ? [
+                                        'id' => $assignment->teacher->id,
+                                        'employee_number' => $assignment->teacher->employee_number,
+                                        'first_name' => $assignment->teacher->first_name,
+                                        'last_name' => $assignment->teacher->last_name,
+                                    ]
+                                    : null,
+                            ];
+                        })->values()
                     ),
                 ];
             }),

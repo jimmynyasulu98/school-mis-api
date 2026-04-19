@@ -26,6 +26,18 @@ class ClassSubject extends Model
         return $this->belongsTo(Staff::class, 'teacher_id');
     }
 
+    public function teacherAssignments()
+    {
+        return $this->hasMany(ClassSubjectTeacher::class);
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(Staff::class, 'class_subject_teachers', 'class_subject_id', 'teacher_id')
+            ->withPivot('is_core')
+            ->withTimestamps();
+    }
+
     public function assessments()
     {
         return $this->hasMany(Assessment::class);
@@ -33,6 +45,18 @@ class ClassSubject extends Model
 
     public function isAssignedToStaff(?string $staffId): bool
     {
-        return $staffId !== null && $this->teacher_id === $staffId;
+        if ($staffId === null) {
+            return false;
+        }
+
+        if ($this->teacher_id === $staffId) {
+            return true;
+        }
+
+        if ($this->relationLoaded('teacherAssignments')) {
+            return $this->teacherAssignments->contains(fn (ClassSubjectTeacher $assignment) => $assignment->teacher_id === $staffId);
+        }
+
+        return $this->teacherAssignments()->where('teacher_id', $staffId)->exists();
     }
 }

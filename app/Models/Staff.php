@@ -24,4 +24,5 @@ class Staff extends Model
     }
 
     public function user() { return $this->hasOne(User::class); }
+    public function classSubjects() { return $this->belongsToMany(ClassSubject::class, 'class_subject_teachers', 'teacher_id', 'class_subject_id')->withPivot('is_core')->withTimestamps(); }
 }

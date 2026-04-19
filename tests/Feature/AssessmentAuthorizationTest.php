@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\AssessmentType;
 use App\Models\ClassRoom;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTeacher;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Staff;
@@ -104,6 +105,40 @@ class AssessmentAuthorizationTest extends TestCase
         ])->assertCreated();
     }
 
+    public function test_co_teacher_can_create_non_restricted_assessment(): void
+    {
+        $teacher = $this->makeUserWithPermissions([
+            'assessments.create',
+            'assessments.view',
+        ]);
+
+        [$term, $classSubject] = $this->makeTeachingContext(null);
+
+        ClassSubjectTeacher::create([
+            'class_subject_id' => $classSubject->id,
+            'teacher_id' => $teacher->staff_id,
+            'is_core' => false,
+        ]);
+
+        $assessmentType = AssessmentType::create([
+            'name' => 'Project',
+            'code' => 'project',
+            'weight' => 15,
+        ]);
+
+        Sanctum::actingAs($teacher);
+
+        $this->postJson('/api/v1/assessments', [
+            'assessment_type_id' => $assessmentType->id,
+            'class_subject_id' => $classSubject->id,
+            'term_id' => $term->id,
+            'title' => 'Group Research Project',
+            'max_score' => 30,
+            'assessment_date' => '2026-03-10',
+        ])->assertCreated()
+            ->assertJsonPath('data.class_subject.teacher_assignments.0.teacher_id', $teacher->staff_id);
+    }
+
     private function makeTeachingContext(?string $teacherId): array
     {
         $year = AcademicYear::create([
@@ -136,6 +171,14 @@ class AssessmentAuthorizationTest extends TestCase
             'subject_id' => $subject->id,
             'teacher_id' => $teacherId,
         ]);
+
+        if ($teacherId !== null) {
+            ClassSubjectTeacher::create([
+                'class_subject_id' => $classSubject->id,
+                'teacher_id' => $teacherId,
+                'is_core' => true,
+            ]);
+        }
 
         return [$term, $classSubject];
     }

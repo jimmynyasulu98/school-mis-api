@@ -66,6 +66,7 @@ class AssessmentController extends BaseApiController
             'assessmentType',
             'classSubject.classRoom',
             'classSubject.subject',
+            'classSubject.teacherAssignments.teacher',
             'term.academicYear',
         ]);
 
@@ -109,7 +110,7 @@ class AssessmentController extends BaseApiController
     {
         $payload = $request->validated();
         $assessmentType = AssessmentType::findOrFail($payload['assessment_type_id']);
-        $classSubject = ClassSubject::with(['classRoom', 'subject'])->findOrFail($payload['class_subject_id']);
+        $classSubject = ClassSubject::with(['classRoom', 'subject', 'teacherAssignments.teacher'])->findOrFail($payload['class_subject_id']);
 
         $this->authorize('create', [Assessment::class, $assessmentType, $classSubject]);
 
@@ -119,6 +120,7 @@ class AssessmentController extends BaseApiController
             'assessmentType',
             'classSubject.classRoom',
             'classSubject.subject',
+            'classSubject.teacherAssignments.teacher',
             'term.academicYear',
         ])))
             ->response()
@@ -166,6 +168,7 @@ class AssessmentController extends BaseApiController
             'assessmentType',
             'classSubject.classRoom',
             'classSubject.subject',
+            'classSubject.teacherAssignments.teacher',
             'term.academicYear',
             'grades',
         ]));
@@ -231,6 +234,7 @@ class AssessmentController extends BaseApiController
             'assessmentType',
             'classSubject.classRoom',
             'classSubject.subject',
+            'classSubject.teacherAssignments.teacher',
             'term.academicYear',
         ]));
     }

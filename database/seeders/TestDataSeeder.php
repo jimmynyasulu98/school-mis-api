@@ -8,6 +8,7 @@ use App\Models\AssessmentType;
 use App\Models\ClassEnrollment;
 use App\Models\ClassRoom;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTeacher;
 use App\Models\FeeItem;
 use App\Models\FeeStructure;
 use App\Models\Guardian;
@@ -145,6 +146,20 @@ class TestDataSeeder extends Seeder
                     ],
                     [
                         'teacher_id' => $teachers[$teacherIndex]->id,
+                    ]
+                );
+
+                $classSubject = ClassSubject::where('class_room_id', $classRoom->id)
+                    ->where('subject_id', $subject->id)
+                    ->first();
+
+                ClassSubjectTeacher::updateOrCreate(
+                    [
+                        'class_subject_id' => $classSubject->id,
+                        'teacher_id' => $teachers[$teacherIndex]->id,
+                    ],
+                    [
+                        'is_core' => true,
                     ]
                 );
             }

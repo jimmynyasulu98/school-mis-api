@@ -204,6 +204,78 @@ class SubjectUpdateRequestSchema {}
 class SubjectResourceSchema {}
 
 /**
+ * @OA\Schema(
+ *   schema="ClassSubjectTeacherAssignment",
+ *   type="object",
+ *   @OA\Property(property="id", type="integer"),
+ *   @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *   @OA\Property(property="is_core", type="boolean"),
+ *   @OA\Property(
+ *     property="teacher",
+ *     type="object",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="employee_number", type="string"),
+ *     @OA\Property(property="first_name", type="string"),
+ *     @OA\Property(property="last_name", type="string")
+ *   )
+ * )
+ */
+class ClassSubjectTeacherAssignmentSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="ClassSubjectTeacherAssignmentInput",
+ *   type="object",
+ *   required={"teacher_id"},
+ *   @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *   @OA\Property(property="is_core", type="boolean")
+ * )
+ */
+class ClassSubjectTeacherAssignmentInputSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="ClassSubjectStoreRequest",
+ *   type="object",
+ *   required={"class_room_id","subject_id"},
+ *   @OA\Property(property="class_room_id", type="integer"),
+ *   @OA\Property(property="subject_id", type="integer"),
+ *   @OA\Property(property="teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignmentInput"))
+ * )
+ */
+class ClassSubjectStoreRequestSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="ClassSubjectTeacherAssignRequest",
+ *   type="object",
+ *   required={"teacher_id"},
+ *   @OA\Property(property="teacher_id", type="string", format="uuid"),
+ *   @OA\Property(property="is_core", type="boolean")
+ * )
+ */
+class ClassSubjectTeacherAssignRequestSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="ClassSubjectResource",
+ *   type="object",
+ *   @OA\Property(property="id", type="integer"),
+ *   @OA\Property(property="class_room_id", type="integer"),
+ *   @OA\Property(property="subject_id", type="integer"),
+ *   @OA\Property(property="teacher_id", type="string", format="uuid", nullable=true),
+ *   @OA\Property(property="core_teacher_id", type="string", format="uuid", nullable=true),
+ *   @OA\Property(property="class_room", type="object"),
+ *   @OA\Property(property="subject", ref="#/components/schemas/SubjectResource"),
+ *   @OA\Property(property="core_teacher", type="object", nullable=true),
+ *   @OA\Property(property="teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
+class ClassSubjectResourceSchema {}
+
+/**
  * @OA\Schema(schema="AssessmentStoreRequest", type="object", required={"class_subject_id","term_id","assessment_type_id","title","max_score","assessment_date"}, @OA\Property(property="class_subject_id", type="integer"), @OA\Property(property="term_id", type="integer"), @OA\Property(property="assessment_type_id", type="integer"), @OA\Property(property="title", type="string"), @OA\Property(property="max_score", type="number", format="float"), @OA\Property(property="assessment_date", type="string", format="date"))
  */
 class AssessmentStoreRequestSchema {}
@@ -369,6 +441,17 @@ class PaginatedPaymentResponseSchema {}
  * )
  */
 class PaginatedAssessmentResponseSchema {}
+
+/**
+ * @OA\Schema(
+ *   schema="PaginatedClassSubjectResponse",
+ *   type="object",
+ *   @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectResource")),
+ *   @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta"),
+ *   @OA\Property(property="links", ref="#/components/schemas/PaginationLinks")
+ * )
+ */
+class PaginatedClassSubjectResponseSchema {}
 
 /**
  * @OA\Schema(

@@ -8,6 +8,7 @@ use App\Models\AssessmentType;
 use App\Models\Attendance;
 use App\Models\ClassRoom;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTeacher;
 use App\Models\FeeStructure;
 use App\Models\Payment;
 use App\Models\Permission;
@@ -68,6 +69,12 @@ class OperationsModulesTest extends TestCase
             'class_room_id' => $classRoom->id,
             'subject_id' => $subject->id,
             'teacher_id' => $user->staff_id,
+        ]);
+
+        ClassSubjectTeacher::create([
+            'class_subject_id' => $classSubject->id,
+            'teacher_id' => $user->staff_id,
+            'is_core' => true,
         ]);
 
         $assessmentType = AssessmentType::create(['name' => 'Quiz', 'weight' => 20]);

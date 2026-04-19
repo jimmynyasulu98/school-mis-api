@@ -5,6 +5,7 @@ use App\Http\Controllers\API\AssessmentController;
 use App\Http\Controllers\API\AttendanceController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ClassRoomController;
+use App\Http\Controllers\API\ClassSubjectController;
 use App\Http\Controllers\API\GradeController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PermissionController;
@@ -63,6 +64,15 @@ Route::prefix('v1')->group(function () {
         Route::get('subjects/{subject}', [SubjectController::class, 'show'])->middleware('permission:subjects.view');
         Route::match(['put', 'patch'], 'subjects/{subject}', [SubjectController::class, 'update'])->middleware('permission:subjects.edit');
         Route::delete('subjects/{subject}', [SubjectController::class, 'destroy'])->middleware('permission:subjects.delete');
+
+        // Class subjects / teaching assignments
+        Route::get('class-subjects', [ClassSubjectController::class, 'index'])->middleware('permission:class-subjects.view');
+        Route::post('class-subjects', [ClassSubjectController::class, 'store'])->middleware('permission:class-subjects.create');
+        Route::get('class-subjects/{classSubject}', [ClassSubjectController::class, 'show'])->middleware('permission:class-subjects.view');
+        Route::delete('class-subjects/{classSubject}', [ClassSubjectController::class, 'destroy'])->middleware('permission:class-subjects.delete');
+        Route::post('class-subjects/{classSubject}/teachers', [ClassSubjectController::class, 'assignTeacher'])->middleware('permission:class-subjects.edit');
+        Route::patch('class-subjects/{classSubject}/teachers/{teacher}/core', [ClassSubjectController::class, 'switchCoreTeacher'])->middleware('permission:class-subjects.edit');
+        Route::delete('class-subjects/{classSubject}/teachers/{teacher}', [ClassSubjectController::class, 'unassignTeacher'])->middleware('permission:class-subjects.edit');
 
         // Assessments
         Route::get('assessments', [AssessmentController::class, 'index'])->middleware('permission:assessments.view');
