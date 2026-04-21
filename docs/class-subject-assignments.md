@@ -3,7 +3,7 @@
 This module separates the academic offering from the teaching assignments:
 
 - `class_subjects` identifies that a subject is taught in a specific class.
-- `class_subject_teachers` stores one or more teachers attached to that class-subject.
+- `class_subject_teachers` stores one or more dated teacher assignments attached to that class-subject.
 - `class_subjects.teacher_id` is kept as the primary or core teacher for backward compatibility and quick lookups.
 
 ## Why this shape
@@ -13,6 +13,7 @@ It supports the normal case of one teacher per subject per class, but also suppo
 - team teaching
 - handover between teachers during a term
 - a core teacher for ownership, reporting, and default workflow decisions
+- answering both current and historical assignment questions
 
 ## API endpoints
 
@@ -33,11 +34,13 @@ It supports the normal case of one teacher per subject per class, but also suppo
   "teacher_assignments": [
     {
       "teacher_id": "11111111-1111-1111-1111-111111111111",
-      "is_core": true
+      "is_core": true,
+      "starts_on": "2026-01-15"
     },
     {
       "teacher_id": "22222222-2222-2222-2222-222222222222",
-      "is_core": false
+      "is_core": false,
+      "starts_on": "2026-01-15"
     }
   ]
 }
@@ -46,8 +49,13 @@ It supports the normal case of one teacher per subject per class, but also suppo
 ## Behavior rules
 
 - A class can only have one `class_subject` per subject.
-- A class-subject can have many teachers.
+- A class-subject can have many teachers across time.
 - Only one teacher can be marked as core at a time.
+- Each assignment has a `starts_on` date and optional `ends_on` date.
+- `ends_on` is the date the assignment stops being current.
+- `teacher_assignments` contains all assignment records, including historical ones.
+- `current_teacher_assignments` contains only the assignments that are active today.
+- The same teacher can be assigned again later, but overlapping periods for the same class-subject are not allowed.
 - If no teacher is marked as core during creation, the first teacher is promoted automatically.
 - If the current core teacher is unassigned and another teacher remains, one remaining teacher is promoted automatically.
 
@@ -56,6 +64,12 @@ It supports the normal case of one teacher per subject per class, but also suppo
 No request body is needed. Promote an already-assigned teacher with:
 
 `PATCH /api/v1/class-subjects/{classSubject}/teachers/{teacher}/core`
+
+## End an assignment without deleting history
+
+`DELETE /api/v1/class-subjects/{classSubject}/teachers/{teacher}`
+
+This endpoint now closes the current assignment by setting its `ends_on` date instead of deleting the row.
 
 ## Recommendation
 

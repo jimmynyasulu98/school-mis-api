@@ -160,6 +160,7 @@ class TestDataSeeder extends Seeder
                     ],
                     [
                         'is_core' => true,
+                        'starts_on' => $term->start_date->toDateString(),
                     ]
                 );
             }

@@ -118,6 +118,7 @@ class AssessmentAuthorizationTest extends TestCase
             'class_subject_id' => $classSubject->id,
             'teacher_id' => $teacher->staff_id,
             'is_core' => false,
+            'starts_on' => now()->toDateString(),
         ]);
 
         $assessmentType = AssessmentType::create([
@@ -177,6 +178,7 @@ class AssessmentAuthorizationTest extends TestCase
                 'class_subject_id' => $classSubject->id,
                 'teacher_id' => $teacherId,
                 'is_core' => true,
+                'starts_on' => now()->toDateString(),
             ]);
         }
 

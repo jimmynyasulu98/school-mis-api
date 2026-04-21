@@ -49,6 +49,9 @@ class ClassSubjectResource extends JsonResource
                         'id' => $assignment->id,
                         'teacher_id' => $assignment->teacher_id,
                         'is_core' => (bool) $assignment->is_core,
+                        'starts_on' => $assignment->starts_on?->toDateString(),
+                        'ends_on' => $assignment->ends_on?->toDateString(),
+                        'is_current' => $assignment->isCurrent(),
                         'teacher' => $assignment->relationLoaded('teacher') && $assignment->teacher !== null
                             ? [
                                 'id' => $assignment->teacher->id,
@@ -59,6 +62,29 @@ class ClassSubjectResource extends JsonResource
                             : null,
                     ];
                 })->values();
+            }),
+            'current_teacher_assignments' => $this->whenLoaded('teacherAssignments', function () {
+                return $this->teacherAssignments
+                    ->filter(fn ($assignment) => $assignment->isCurrent())
+                    ->values()
+                    ->map(function ($assignment) {
+                        return [
+                            'id' => $assignment->id,
+                            'teacher_id' => $assignment->teacher_id,
+                            'is_core' => (bool) $assignment->is_core,
+                            'starts_on' => $assignment->starts_on?->toDateString(),
+                            'ends_on' => $assignment->ends_on?->toDateString(),
+                            'is_current' => true,
+                            'teacher' => $assignment->relationLoaded('teacher') && $assignment->teacher !== null
+                                ? [
+                                    'id' => $assignment->teacher->id,
+                                    'employee_number' => $assignment->teacher->employee_number,
+                                    'first_name' => $assignment->teacher->first_name,
+                                    'last_name' => $assignment->teacher->last_name,
+                                ]
+                                : null,
+                        ];
+                    });
             }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

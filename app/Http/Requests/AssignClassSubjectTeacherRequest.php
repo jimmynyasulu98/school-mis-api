@@ -16,6 +16,8 @@ class AssignClassSubjectTeacherRequest extends FormRequest
         return [
             'teacher_id' => ['required', 'uuid', 'exists:staff,id'],
             'is_core' => ['sometimes', 'boolean'],
+            'starts_on' => ['sometimes', 'date'],
+            'ends_on' => ['nullable', 'date'],
         ];
     }
 }

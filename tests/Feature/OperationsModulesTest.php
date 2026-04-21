@@ -75,6 +75,7 @@ class OperationsModulesTest extends TestCase
             'class_subject_id' => $classSubject->id,
             'teacher_id' => $user->staff_id,
             'is_core' => true,
+            'starts_on' => now()->toDateString(),
         ]);
 
         $assessmentType = AssessmentType::create(['name' => 'Quiz', 'weight' => 20]);

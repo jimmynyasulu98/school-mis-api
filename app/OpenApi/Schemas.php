@@ -327,6 +327,9 @@ namespace App\OpenApi;
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="teacher_id", type="string", format="uuid"),
  *     @OA\Property(property="is_core", type="boolean", example=true),
+ *     @OA\Property(property="starts_on", type="string", format="date", example="2026-01-15"),
+ *     @OA\Property(property="ends_on", type="string", format="date", nullable=true, example=null),
+ *     @OA\Property(property="is_current", type="boolean", example=true),
  *     @OA\Property(
  *         property="teacher",
  *         type="object",
@@ -349,6 +352,7 @@ namespace App\OpenApi;
  *     @OA\Property(property="subject", ref="#/components/schemas/SubjectResource"),
  *     @OA\Property(property="core_teacher", ref="#/components/schemas/StaffResource"),
  *     @OA\Property(property="teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
+ *     @OA\Property(property="current_teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time")
  * )
@@ -358,7 +362,9 @@ namespace App\OpenApi;
  *     type="object",
  *     required={"teacher_id"},
  *     @OA\Property(property="teacher_id", type="string", format="uuid"),
- *     @OA\Property(property="is_core", type="boolean", example=true)
+ *     @OA\Property(property="is_core", type="boolean", example=true),
+ *     @OA\Property(property="starts_on", type="string", format="date", example="2026-01-15"),
+ *     @OA\Property(property="ends_on", type="string", format="date", nullable=true, example=null)
  * )
  *
  * @OA\Schema(
@@ -379,7 +385,9 @@ namespace App\OpenApi;
  *     type="object",
  *     required={"teacher_id"},
  *     @OA\Property(property="teacher_id", type="string", format="uuid"),
- *     @OA\Property(property="is_core", type="boolean", example=false)
+ *     @OA\Property(property="is_core", type="boolean", example=false),
+ *     @OA\Property(property="starts_on", type="string", format="date", example="2026-05-01"),
+ *     @OA\Property(property="ends_on", type="string", format="date", nullable=true, example=null)
  * )
  *
  * @OA\Schema(

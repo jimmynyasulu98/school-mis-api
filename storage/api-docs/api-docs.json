@@ -3626,6 +3626,18 @@
                     "is_core": {
                         "type": "boolean"
                     },
+                    "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "ends_on": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    },
                     "teacher": {
                         "properties": {
                             "id": {
@@ -3658,6 +3670,15 @@
                     },
                     "is_core": {
                         "type": "boolean"
+                    },
+                    "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "ends_on": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -3694,6 +3715,15 @@
                     },
                     "is_core": {
                         "type": "boolean"
+                    },
+                    "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "ends_on": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -3730,6 +3760,12 @@
                         "nullable": true
                     },
                     "teacher_assignments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassSubjectTeacherAssignment"
+                        }
+                    },
+                    "current_teacher_assignments": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ClassSubjectTeacherAssignment"

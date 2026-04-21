@@ -56,6 +56,9 @@ class AssessmentResource extends JsonResource
                                 'id' => $assignment->id,
                                 'teacher_id' => $assignment->teacher_id,
                                 'is_core' => (bool) $assignment->is_core,
+                                'starts_on' => $assignment->starts_on?->toDateString(),
+                                'ends_on' => $assignment->ends_on?->toDateString(),
+                                'is_current' => method_exists($assignment, 'isCurrent') ? $assignment->isCurrent() : null,
                                 'teacher' => $assignment->relationLoaded('teacher') && $assignment->teacher !== null
                                     ? [
                                         'id' => $assignment->teacher->id,

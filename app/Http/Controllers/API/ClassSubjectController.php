@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\AssignClassSubjectTeacherRequest;
+use App\Http\Requests\EndClassSubjectTeacherAssignmentRequest;
 use App\Http\Requests\StoreClassSubjectRequest;
 use App\Http\Resources\ClassSubjectResource;
 use App\Models\ClassSubject;
-use App\Models\ClassSubjectTeacher;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -124,6 +124,8 @@ class ClassSubjectController extends BaseApiController
             $this->syncTeacherAssignments($classSubject, [[
                 'teacher_id' => $payload['teacher_id'],
                 'is_core' => $payload['is_core'] ?? false,
+                'starts_on' => $payload['starts_on'] ?? now()->toDateString(),
+                'ends_on' => $payload['ends_on'] ?? null,
             ]], true);
         });
 
@@ -149,6 +151,7 @@ class ClassSubjectController extends BaseApiController
     {
         DB::transaction(function () use ($classSubject, $teacher) {
             $assignment = $classSubject->teacherAssignments()
+                ->current()
                 ->where('teacher_id', $teacher->id)
                 ->first();
 
@@ -158,7 +161,7 @@ class ClassSubjectController extends BaseApiController
                 ]);
             }
 
-            $classSubject->teacherAssignments()->update(['is_core' => false]);
+            $classSubject->teacherAssignments()->current()->update(['is_core' => false]);
             $assignment->forceFill(['is_core' => true])->save();
             $classSubject->update(['teacher_id' => $teacher->id]);
         });
@@ -181,36 +184,32 @@ class ClassSubjectController extends BaseApiController
      *     )
      * )
      */
-    public function unassignTeacher(ClassSubject $classSubject, Staff $teacher)
+    public function unassignTeacher(EndClassSubjectTeacherAssignmentRequest $request, ClassSubject $classSubject, Staff $teacher)
     {
-        DB::transaction(function () use ($classSubject, $teacher) {
+        $payload = $request->validated();
+
+        DB::transaction(function () use ($classSubject, $teacher, $payload) {
+            $effectiveEndDate = $payload['ends_on'] ?? now()->toDateString();
             $assignment = $classSubject->teacherAssignments()
+                ->current($effectiveEndDate)
                 ->where('teacher_id', $teacher->id)
                 ->first();
 
             if ($assignment === null) {
                 throw ValidationException::withMessages([
-                    'teacher_id' => ['The selected teacher is not assigned to this class subject.'],
+                    'teacher_id' => ['The selected teacher does not have a current assignment for this class subject on the provided end date.'],
                 ]);
             }
 
-            $assignment->delete();
-
-            $remaining = $classSubject->teacherAssignments()->orderBy('id')->get();
-            $newCoreTeacherId = null;
-
-            if ($remaining->isNotEmpty()) {
-                $coreAssignment = $remaining->firstWhere('is_core', true) ?? $remaining->first();
-
-                $classSubject->teacherAssignments()
-                    ->where('class_subject_id', $classSubject->id)
-                    ->update(['is_core' => false]);
-
-                $coreAssignment->forceFill(['is_core' => true])->save();
-                $newCoreTeacherId = $coreAssignment->teacher_id;
+            if ($assignment->starts_on !== null && $assignment->starts_on->toDateString() > $effectiveEndDate) {
+                throw ValidationException::withMessages([
+                    'ends_on' => ['The end date cannot be before the assignment start date.'],
+                ]);
             }
 
-            $classSubject->update(['teacher_id' => $newCoreTeacherId]);
+            $assignment->forceFill(['ends_on' => $effectiveEndDate])->save();
+
+            $this->syncCurrentCoreTeacher($classSubject);
         });
 
         return ClassSubjectResource::make($classSubject->fresh()->load($this->defaultIncludes()));
@@ -244,13 +243,13 @@ class ClassSubjectController extends BaseApiController
     }
 
     /**
-     * @param array<int, array{teacher_id:string,is_core?:bool}> $teacherAssignments
+     * @param array<int, array{teacher_id:string,is_core?:bool,starts_on?:string,ends_on?:?string}> $teacherAssignments
      */
     private function syncTeacherAssignments(ClassSubject $classSubject, array $teacherAssignments, bool $merge = false): void
     {
         if ($teacherAssignments === []) {
             if (! $merge) {
-                $classSubject->teacherAssignments()->delete();
+                $classSubject->teacherAssignments()->current()->update(['ends_on' => now()->toDateString()]);
                 $classSubject->update(['teacher_id' => null]);
             }
 
@@ -261,13 +260,15 @@ class ClassSubjectController extends BaseApiController
             ->map(fn (array $assignment) => [
                 'teacher_id' => $assignment['teacher_id'],
                 'is_core' => (bool) ($assignment['is_core'] ?? false),
+                'starts_on' => $assignment['starts_on'] ?? now()->toDateString(),
+                'ends_on' => $assignment['ends_on'] ?? null,
             ])
             ->unique('teacher_id')
             ->values();
 
         if ($incomingAssignments->isEmpty()) {
             if (! $merge) {
-                $classSubject->teacherAssignments()->delete();
+                $classSubject->teacherAssignments()->current()->update(['ends_on' => now()->toDateString()]);
                 $classSubject->update(['teacher_id' => null]);
             }
 
@@ -280,58 +281,94 @@ class ClassSubjectController extends BaseApiController
             ]);
         }
 
-        $normalizedAssignments = $incomingAssignments;
-
-        if ($merge) {
-            $normalizedAssignments = $classSubject->teacherAssignments()
-                ->get()
-                ->mapWithKeys(fn (ClassSubjectTeacher $assignment) => [$assignment->teacher_id => [
-                    'teacher_id' => $assignment->teacher_id,
-                    'is_core' => (bool) $assignment->is_core,
-                ]]);
-
-            foreach ($incomingAssignments as $assignment) {
-                $normalizedAssignments->put($assignment['teacher_id'], $assignment);
-            }
-
-            $normalizedAssignments = $normalizedAssignments->values();
-        }
-
         $designatedCoreTeacherId = $incomingAssignments->firstWhere('is_core', true)['teacher_id'] ?? null;
 
-        if ($designatedCoreTeacherId === null) {
-            $designatedCoreTeacherId = $merge ? $classSubject->teacher_id : null;
+        foreach ($incomingAssignments as $assignment) {
+            $this->ensureTeacherAssignmentDoesNotOverlap($classSubject, $assignment);
         }
-
-        if ($designatedCoreTeacherId !== null && ! $normalizedAssignments->contains(fn (array $assignment) => $assignment['teacher_id'] === $designatedCoreTeacherId)) {
-            $designatedCoreTeacherId = null;
-        }
-
-        if ($designatedCoreTeacherId === null) {
-            $designatedCoreTeacherId = $normalizedAssignments->first()['teacher_id'];
-        }
-
-        $normalizedAssignments = $normalizedAssignments
-            ->map(function (array $assignment) use ($designatedCoreTeacherId) {
-                $assignment['is_core'] = $assignment['teacher_id'] === $designatedCoreTeacherId;
-
-                return $assignment;
-            })
-            ->values();
 
         if (! $merge) {
-            $classSubject->teacherAssignments()->delete();
-        } else {
-            $classSubject->teacherAssignments()->update(['is_core' => false]);
+            $replacementStartDate = $incomingAssignments->min('starts_on');
+            $classSubject->teacherAssignments()
+                ->current($replacementStartDate)
+                ->update(['ends_on' => $replacementStartDate]);
         }
 
-        foreach ($normalizedAssignments as $assignment) {
-            $classSubject->teacherAssignments()->updateOrCreate(
-                ['teacher_id' => $assignment['teacher_id']],
-                ['is_core' => $assignment['is_core']]
-            );
+        foreach ($incomingAssignments as $assignment) {
+            $classSubject->teacherAssignments()->create([
+                'teacher_id' => $assignment['teacher_id'],
+                'is_core' => false,
+                'starts_on' => $assignment['starts_on'],
+                'ends_on' => $assignment['ends_on'],
+            ]);
         }
 
-        $classSubject->update(['teacher_id' => $designatedCoreTeacherId]);
+        $this->syncCurrentCoreTeacher($classSubject, now()->toDateString(), $designatedCoreTeacherId);
+    }
+
+    /**
+     * @param array{teacher_id:string,is_core:bool,starts_on:string,ends_on:?string} $assignment
+     */
+    private function ensureTeacherAssignmentDoesNotOverlap(ClassSubject $classSubject, array $assignment): void
+    {
+        $startsOn = $assignment['starts_on'];
+        $endsOn = $assignment['ends_on'];
+
+        if ($endsOn !== null && $endsOn < $startsOn) {
+            throw ValidationException::withMessages([
+                'teacher_assignments' => ['The assignment end date cannot be earlier than the start date.'],
+            ]);
+        }
+
+        $overlapExists = $classSubject->teacherAssignments()
+            ->where('teacher_id', $assignment['teacher_id'])
+            ->where(function ($query) use ($startsOn, $endsOn) {
+                $query->whereNull('ends_on')
+                    ->orWhereDate('ends_on', '>', $startsOn);
+            })
+            ->when($endsOn !== null, function ($query) use ($endsOn) {
+                $query->whereDate('starts_on', '<', $endsOn);
+            })
+            ->exists();
+
+        if ($overlapExists) {
+            throw ValidationException::withMessages([
+                'teacher_assignments' => ['A teacher cannot have overlapping assignment periods for the same class subject.'],
+            ]);
+        }
+    }
+
+    private function syncCurrentCoreTeacher(ClassSubject $classSubject, ?string $effectiveDate = null, ?string $preferredTeacherId = null): void
+    {
+        $date = $effectiveDate ?? now()->toDateString();
+        $currentAssignments = $classSubject->teacherAssignments()
+            ->current($date)
+            ->orderBy('starts_on')
+            ->orderBy('id')
+            ->get();
+
+        if ($currentAssignments->isEmpty()) {
+            $classSubject->update(['teacher_id' => null]);
+
+            return;
+        }
+
+        $coreAssignment = null;
+
+        if ($preferredTeacherId !== null) {
+            $coreAssignment = $currentAssignments->firstWhere('teacher_id', $preferredTeacherId);
+        }
+
+        if ($coreAssignment === null && $classSubject->teacher_id !== null) {
+            $coreAssignment = $currentAssignments->firstWhere('teacher_id', $classSubject->teacher_id);
+        }
+
+        if ($coreAssignment === null) {
+            $coreAssignment = $currentAssignments->firstWhere('is_core', true) ?? $currentAssignments->first();
+        }
+
+        $classSubject->teacherAssignments()->current($date)->update(['is_core' => false]);
+        $coreAssignment->forceFill(['is_core' => true])->save();
+        $classSubject->update(['teacher_id' => $coreAssignment->teacher_id]);
     }
 }

@@ -210,6 +210,9 @@ class SubjectResourceSchema {}
  *   @OA\Property(property="id", type="integer"),
  *   @OA\Property(property="teacher_id", type="string", format="uuid"),
  *   @OA\Property(property="is_core", type="boolean"),
+ *   @OA\Property(property="starts_on", type="string", format="date"),
+ *   @OA\Property(property="ends_on", type="string", format="date", nullable=true),
+ *   @OA\Property(property="is_current", type="boolean"),
  *   @OA\Property(
  *     property="teacher",
  *     type="object",
@@ -228,7 +231,9 @@ class ClassSubjectTeacherAssignmentSchema {}
  *   type="object",
  *   required={"teacher_id"},
  *   @OA\Property(property="teacher_id", type="string", format="uuid"),
- *   @OA\Property(property="is_core", type="boolean")
+ *   @OA\Property(property="is_core", type="boolean"),
+ *   @OA\Property(property="starts_on", type="string", format="date"),
+ *   @OA\Property(property="ends_on", type="string", format="date", nullable=true)
  * )
  */
 class ClassSubjectTeacherAssignmentInputSchema {}
@@ -251,7 +256,9 @@ class ClassSubjectStoreRequestSchema {}
  *   type="object",
  *   required={"teacher_id"},
  *   @OA\Property(property="teacher_id", type="string", format="uuid"),
- *   @OA\Property(property="is_core", type="boolean")
+ *   @OA\Property(property="is_core", type="boolean"),
+ *   @OA\Property(property="starts_on", type="string", format="date"),
+ *   @OA\Property(property="ends_on", type="string", format="date", nullable=true)
  * )
  */
 class ClassSubjectTeacherAssignRequestSchema {}
@@ -269,6 +276,7 @@ class ClassSubjectTeacherAssignRequestSchema {}
  *   @OA\Property(property="subject", ref="#/components/schemas/SubjectResource"),
  *   @OA\Property(property="core_teacher", type="object", nullable=true),
  *   @OA\Property(property="teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
+ *   @OA\Property(property="current_teacher_assignments", type="array", @OA\Items(ref="#/components/schemas/ClassSubjectTeacherAssignment")),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time")
  * )

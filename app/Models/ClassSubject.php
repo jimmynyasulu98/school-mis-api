@@ -34,7 +34,7 @@ class ClassSubject extends Model
     public function teachers()
     {
         return $this->belongsToMany(Staff::class, 'class_subject_teachers', 'class_subject_id', 'teacher_id')
-            ->withPivot('is_core')
+            ->withPivot('is_core', 'starts_on', 'ends_on')
             ->withTimestamps();
     }
 
@@ -54,9 +54,11 @@ class ClassSubject extends Model
         }
 
         if ($this->relationLoaded('teacherAssignments')) {
-            return $this->teacherAssignments->contains(fn (ClassSubjectTeacher $assignment) => $assignment->teacher_id === $staffId);
+            return $this->teacherAssignments->contains(
+                fn (ClassSubjectTeacher $assignment) => $assignment->teacher_id === $staffId && $assignment->isCurrent()
+            );
         }
 
-        return $this->teacherAssignments()->where('teacher_id', $staffId)->exists();
+        return $this->teacherAssignments()->current()->where('teacher_id', $staffId)->exists();
     }
 }

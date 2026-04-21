@@ -25,6 +25,8 @@ class StoreClassSubjectRequest extends FormRequest
             'teacher_assignments' => ['sometimes', 'array', 'min:1'],
             'teacher_assignments.*.teacher_id' => ['required', 'uuid', 'exists:staff,id', 'distinct'],
             'teacher_assignments.*.is_core' => ['sometimes', 'boolean'],
+            'teacher_assignments.*.starts_on' => ['sometimes', 'date'],
+            'teacher_assignments.*.ends_on' => ['nullable', 'date'],
         ];
     }
 }
