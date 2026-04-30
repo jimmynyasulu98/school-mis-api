@@ -210,7 +210,7 @@ class StudentEnrollmentService
             // Skip if student is not active
             if (!$student->is_active) {
                 $skipped[] = ['student_id' => $student->id, 'reason' => 'Inactive'];
-                continue;
+                
             }
 
             try {
@@ -248,22 +248,27 @@ class StudentEnrollmentService
      */
     private function getNextClass(ClassRoom $currentClass): ?ClassRoom
     {
-        $formOrder = ['Form 1' => 1, 'Form 2' => 2, 'Form 3' => 3, 'Form 4' => 4, 'Form 5' => 5, 'Form 6' => 6];
-        
         $currentForm = $currentClass->form;
-        $currentLevel = $formOrder[$currentForm] ?? null;
-
-        if (!$currentLevel || $currentLevel >= 6) {
-            return null; // No next class for final year
+        
+        // Extract form number
+        if (!preg_match('/Form (\d+)/', $currentForm, $matches)) {
+            return null; // Invalid form format
+        }
+        
+        $currentLevel = (int) $matches[1];
+        $nextLevel = $currentLevel + 1;
+        $nextForm = 'Form ' . $nextLevel;
+        
+        // Check if next form exists in the database
+        $nextClassExists = ClassRoom::whereRaw("name LIKE ?", ["{$nextForm}%"])->exists();
+        if (!$nextClassExists) {
+            return null; // No next class, this is final year
         }
 
-        $nextLevel = $currentLevel + 1;
-        $nextForm = array_search($nextLevel, $formOrder);
-
         // Find next class with same stream or any stream if not available
-        return ClassRoom::where('form', $nextForm)
+        return ClassRoom::whereRaw("name LIKE ?", ["{$nextForm}%"])
             ->where('stream', $currentClass->stream)
-            ->first() ?? ClassRoom::where('form', $nextForm)->first();
+            ->first() ?? ClassRoom::whereRaw("name LIKE ?", ["{$nextForm}%"])->first();
     }
 
     /**

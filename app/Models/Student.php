@@ -90,18 +90,22 @@ class Student extends Model
         if (!$this->currentClassRoom) {
             return false;
         }
+        
         // Get the highest form number from all class rooms
-        $maxForm = ClassRoom::all()->map(function ($class) {
-            if (preg_match('/Form (\d+)/', $class->form, $matches)) {
-                return (int) $matches[1];
-            }
-            return 0;
-        })->max();
+        $maxFormNumber = ClassRoom::where('name', 'LIKE', 'Form %')
+            ->get()
+            ->map(function ($class) {
+                if (preg_match('/Form (\d+)/', $class->name, $matches)) {
+                    return (int) $matches[1];
+                }
+                return 0;
+            })
+            ->max();
 
         // Extract form number from current class
         if (preg_match('/Form (\d+)/', $this->currentClassRoom->form, $matches)) {
             $currentFormNumber = (int) $matches[1];
-            return $currentFormNumber === $maxForm;
+            return $currentFormNumber === $maxFormNumber;
         }
         return false;
     }
