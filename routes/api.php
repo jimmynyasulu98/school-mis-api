@@ -13,6 +13,7 @@ use App\Http\Controllers\API\ReportCardController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\StaffController;
 use App\Http\Controllers\API\StudentController;
+use App\Http\Controllers\API\StudentEnrollmentController;
 use App\Http\Controllers\API\SubjectController;
 use App\Http\Controllers\API\TermController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,11 @@ Route::prefix('v1')->group(function () {
         Route::get('students/{student}', [StudentController::class, 'show'])->middleware('permission:students.view');
         Route::match(['put', 'patch'], 'students/{student}', [StudentController::class, 'update'])->middleware('permission:students.edit');
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->middleware('permission:students.delete');
+
+        // Student Enrollment routes
+        Route::post('students/{student}/enroll-failed', [StudentEnrollmentController::class, 'enrollFailed'])->middleware('permission:students.manage');
+        Route::post('students/{student}/deactivate', [StudentEnrollmentController::class, 'deactivate'])->middleware('permission:students.manage');
+        Route::get('students/{student}/enrollments', [StudentEnrollmentController::class, 'getEnrollments'])->middleware('permission:students.view');
 
         // Staff routes
         Route::get('staff', [StaffController::class, 'index'])->middleware('permission:staff.view');

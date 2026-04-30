@@ -3,11 +3,19 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTermRequest;
 use App\Models\Term;
+use App\Services\StudentEnrollmentService;
 use Illuminate\Http\Request;
 
 class TermController extends Controller
 {
+    protected StudentEnrollmentService $enrollmentService;
+
+    public function __construct(StudentEnrollmentService $enrollmentService)
+    {
+        $this->enrollmentService = $enrollmentService;
+    }
     /**
      * @OA\Get(
      *     path="/api/v1/terms",
@@ -40,21 +48,43 @@ class TermController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/TermStoreRequest")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="Term created",
      *         @OA\JsonContent(ref="#/components/schemas/TermResource")
      *     )
      * )
      */
-    public function store(Request $request)
+    public function store(StoreTermRequest $request)
     {
-        return Term::create($request->validate([
-            'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
-            'name' => ['required', 'string', 'max:30'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after:start_date'],
-            'is_current' => ['nullable', 'boolean'],
-        ]));
+        $data = $request->validated();
+        
+        // Create the term
+        $term = Term::create($data);
+
+        // Auto-enroll students if this is the first term of the academic year
+        $enrollmentSummary = null;
+        if ($request->shouldAutoEnroll()) {
+            $previousTerm = $term->academicYear->terms()
+                ->where('id', '!=', $term->id)
+                ->orderBy('start_date', 'desc')
+                ->first();
+
+            if (!$previousTerm) {
+                // This is the first term - auto-enroll students
+                $enrollmentSummary = $this->enrollmentService->autoEnrollStudents(
+                    $term,
+                    $request->getEnrollmentOptions()
+                );
+            } else {
+                // Subsequent term - enroll active students
+                $enrollmentSummary = $this->enrollmentService->enrollStudentsToTerm($term);
+            }
+        }
+
+        return response()->json([
+            'data' => $term->load('academicYear'),
+            'enrollment_summary' => $enrollmentSummary,
+        ], 201);
     }
 
     /**

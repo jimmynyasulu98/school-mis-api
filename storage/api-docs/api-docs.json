@@ -2568,6 +2568,278 @@
                 ]
             }
         },
+        "/api/v1/students/{student}/enroll-failed": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Manually enroll a failed student to a new class",
+                "description": "Enroll a student who failed to a new class in a specified term. The student will be marked as ACTIVE again.",
+                "operationId": "a725db0396a44120baccc29d68b74d1f",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "description": "Student ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "class_room_id",
+                                    "term_id",
+                                    "enrollment_type",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "class_room_id": {
+                                        "description": "Target class ID",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "term_id": {
+                                        "description": "Term ID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "enrollment_type": {
+                                        "description": "REPEAT=same/lower class, TRANSFER=different school/track",
+                                        "type": "string",
+                                        "enum": [
+                                            "REPEAT",
+                                            "TRANSFER"
+                                        ]
+                                    },
+                                    "reason": {
+                                        "description": "Reason for re-enrollment",
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "School decided to give student another chance"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Student enrolled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Student enrolled successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/StudentResource"
+                                        },
+                                        "enrollment": {
+                                            "properties": {
+                                                "enrollment_id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "class_name": {
+                                                    "type": "string"
+                                                },
+                                                "term_name": {
+                                                    "type": "string"
+                                                },
+                                                "enrollment_type": {
+                                                    "type": "string"
+                                                },
+                                                "reason": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request - student not failed or other validation error"
+                    },
+                    "404": {
+                        "description": "Student, class, or term not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students/{student}/deactivate": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Deactivate a student",
+                "description": "Mark a student as inactive when they leave school or decide not to continue.",
+                "operationId": "af4c96af5675ba7ba44820cea1855aea",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "description": "Student ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "description": "Reason for deactivation",
+                                        "type": "string",
+                                        "enum": [
+                                            "left_school",
+                                            "failed_not_returning",
+                                            "transferred_school",
+                                            "withdrawn_by_guardian",
+                                            "other"
+                                        ]
+                                    },
+                                    "notes": {
+                                        "description": "Additional notes",
+                                        "type": "string",
+                                        "maxLength": 1000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Student deactivated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Student deactivated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/StudentResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "404": {
+                        "description": "Student not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/students/{student}/enrollments": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Get student enrollment history",
+                "operationId": "3430a4a763029839eba5e06fd9949109",
+                "parameters": [
+                    {
+                        "name": "student",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Enrollment history",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "class_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "term_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "academic_year": {
+                                                        "type": "string"
+                                                    },
+                                                    "enrollment_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "enrollment_date": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/subjects": {
             "get": {
                 "tags": [
@@ -2800,7 +3072,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Term created",
                         "content": {
                             "application/json": {

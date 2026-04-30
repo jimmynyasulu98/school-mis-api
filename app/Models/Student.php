@@ -23,6 +23,7 @@ class Student extends Model
         'enrollment_date',
         'status',
         'current_class_room_id',
+        'is_active',
     ];
 
     protected function casts(): array
@@ -30,6 +31,7 @@ class Student extends Model
         return [
             'date_of_birth' => 'date',
             'enrollment_date' => 'date',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -60,5 +62,74 @@ class Student extends Model
     public function attendanceRecords()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    // Status Constants
+    public const STATUS_ACTIVE = 'ACTIVE';
+    public const STATUS_INACTIVE = 'INACTIVE';
+    public const STATUS_FAILED = 'FAILED';
+    public const STATUS_PROMOTED = 'PROMOTED';
+    public const STATUS_TRANSFERRED = 'TRANSFERRED';
+    public const STATUS_WITHDRAWN = 'WITHDRAWN';
+
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_ACTIVE,
+            self::STATUS_INACTIVE,
+            self::STATUS_FAILED,
+            self::STATUS_PROMOTED,
+            self::STATUS_TRANSFERRED,
+            self::STATUS_WITHDRAWN,
+        ];
+    }
+
+    // Check if student is in final year
+    public function isInFinalYear(): bool
+    {
+        if (!$this->currentClassRoom) {
+            return false;
+        }
+        // Get the highest form number from all class rooms
+        $maxForm = ClassRoom::all()->map(function ($class) {
+            if (preg_match('/Form (\d+)/', $class->form, $matches)) {
+                return (int) $matches[1];
+            }
+            return 0;
+        })->max();
+
+        // Extract form number from current class
+        if (preg_match('/Form (\d+)/', $this->currentClassRoom->form, $matches)) {
+            $currentFormNumber = (int) $matches[1];
+            return $currentFormNumber === $maxForm;
+        }
+        return false;
+    }
+
+    // Check if student can be promoted
+    public function canBePromoted(): bool
+    {
+        return $this->is_active && 
+               $this->status === self::STATUS_ACTIVE && 
+               !$this->isInFinalYear();
+    }
+
+    // Deactivate student
+    public function deactivate(string $reason = null): void
+    {
+        $this->update([
+            'is_active' => false,
+            'status' => self::STATUS_INACTIVE,
+        ]);
+
+        if ($reason) {
+            AuditLog::create([
+                'user_id' => auth()?->id(),
+                'action' => 'DEACTIVATED',
+                'subject_type' => 'Student',
+                'subject_id' => $this->id,
+                'notes' => json_encode(['reason' => $reason]),
+            ]);
+        }
     }
 }
